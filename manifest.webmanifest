@@ -1,0 +1,10 @@
+{
+  "name": "知政 · 政治理论排坑",
+  "short_name": "知政",
+  "description": "政治理论、月半时政、重大专题与常识速记",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f5f1e8",
+  "theme_color": "#a62b2b",
+  "icons": [{"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+}

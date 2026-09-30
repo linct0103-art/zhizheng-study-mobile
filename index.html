@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f5f1e8"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><title>知政 · 政治理论排坑</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@600;700;900&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=20260929-trap-blank-next">
+  <link rel="stylesheet" href="common-digest.css?v=20260911-shared-keywords">
+  <link rel="stylesheet" href="mobile.css?v=20260930-iphone14pro-2">
+  <link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon.svg" type="image/svg+xml">
+</head>
+<body>
+<div class="grain"></div>
+<header>
+  <a class="brand" href="#"><span class="brand-mark">知</span><span>知政</span></a>
+  <nav class="subject-nav" aria-label="学习导航"><button class="selected" data-main="politics"><span>01</span>政治理论</button><button data-main="knowledge"><span>02</span>常识判断</button><button id="notebookEntry"><span>★</span>重点本</button></nav>
+  <div class="header-meta"><span id="today"></span><span class="divider"></span><span>政治：消化清单＋排坑手册　·　常识：五类清单＋法律课程</span></div>
+</header>
+<main>
+<section id="hubView" class="view study-hub" aria-hidden="true">
+  <div class="hub-heading"><p>今日学习入口</p><h1>两大板块，分开学清楚</h1><span>政治理论重体系与辨错；常识重高频积累和碎片复习。</span></div>
+  <div class="hub-grid">
+    <article class="hub-card politics-card"><small>01 · 政治理论</small><h2>理论 + 月半时政</h2><p>理论：消化清单＋排坑手册；月半时政：消化清单＋资料题目。</p><div><button id="openTheory"><b>理论学习</b><span>清单学习 · 手册排坑 →</span></button><button id="openCurrent"><b>月半时政</b><span>清单挖空 · 资料做题 →</span></button></div></article>
+    <article class="hub-card knowledge-card"><small>02 · 常识判断</small><h2>五类常识消化清单</h2><p>文史、科技、经济、地理、法律：每点一次显示一空，全部显示后再点进入下一张。</p><div class="priority-preview"><span><i>01</i>五类常识一页选择</span><span><i>02</i>即点即看，快速记忆</span><span><i>03</i>保留法律课程入口</span></div><button id="openKnowledge" class="hub-primary">进入常识清单 →</button></article>
+  </div>
+</section>
+<section id="politicsMenuView" class="view politics-menu-view">
+  <button class="back-hub">← 返回两大板块</button><div class="subpage-heading"><small>政治理论</small><h1>选择今天的学习内容</h1></div>
+  <div class="politics-options"><button id="theoryEntry"><span>01</span><div><b>理论部分</b><small>消化清单学习 → 排坑手册辨错</small></div><i>进入 →</i></button><button id="currentEntry"><span>02</span><div><b>月半时政</b><small>每半月：消化清单挖空 → 资料题目</small></div><i>进入 →</i></button><button id="majorTopicEntry"><span>03</span><div><b>重大专题时政</b><small>一份讲义 → 一套消化清单题库</small></div><i>进入 →</i></button><button id="examTrapEntry"><span>04</span><div><b>卷子排坑清单</b><small>根据做过的题 → 判断高频替换</small></div><i>进入 →</i></button></div>
+</section>
+<section id="currentView" class="view current-view politics-shell"><aside class="politics-rail"><div><button data-politics-view="theory"><i>01</i><span>理论部分</span></button><button class="selected" data-politics-view="current"><i>02</i><span>月半时政</span></button><button data-politics-view="majorTopic"><i>03</i><span>重大专题</span></button><button data-politics-view="examTrap"><i>04</i><span>卷子排坑</span></button></div></aside><div class="politics-page-body"><nav class="page-top"><span class="current-top-tools"><button id="currentNotesEntry" class="current-notes-entry">备考备注 <b id="currentNotesCount">0</b></button><button id="currentDigestAll" class="integrated-digest" title="一体学习全部月份消化清单" aria-label="一体学习全部月份消化清单"><i>∞</i><b id="currentDigestAllProgress">0/0</b></button></span><div><strong>消化清单挖空 → 资料题目 → 到期复习</strong></div><button id="currentAll" class="current-all">全部月份综合练习 →</button></nav><div id="currentGrid" class="current-grid"></div></div></section>
+<section id="majorTopicView" class="view major-topic-view politics-shell"><aside class="politics-rail"><div><button data-politics-view="theory"><i>01</i><span>理论部分</span></button><button data-politics-view="current"><i>02</i><span>月半时政</span></button><button class="selected" data-politics-view="majorTopic"><i>03</i><span>重大专题</span></button><button data-politics-view="examTrap"><i>04</i><span>卷子排坑</span></button></div></aside><div class="politics-page-body"><nav class="page-top major-topic-top"><button id="majorDigestAll" class="integrated-digest" title="一体学习全部重大专题消化清单" aria-label="一体学习全部重大专题消化清单"><i>∞</i><b id="majorDigestAllProgress">0/0</b></button><div><small>MAJOR CURRENT AFFAIRS</small><strong>重大专题时政 · 讲义消化清单</strong></div><button id="majorTopicAll" class="current-all">全部专题混合学习 →</button></nav><div id="majorTopicGrid" class="major-topic-grid"></div></div></section>
+<section id="examTrapView" class="view exam-trap-view politics-shell"><aside class="politics-rail"><div><button data-politics-view="theory"><i>01</i><span>理论部分</span></button><button data-politics-view="current"><i>02</i><span>月半时政</span></button><button data-politics-view="majorTopic"><i>03</i><span>重大专题</span></button><button class="selected" data-politics-view="examTrap"><i>04</i><span>卷子排坑</span></button></div></aside><div class="politics-page-body"><nav class="page-top exam-trap-top"><button id="examTrapAll" class="integrated-digest" title="连续学习全部卷子排坑判断题" aria-label="连续学习全部卷子排坑判断题"><i>∞</i><b id="examTrapAllProgress">0/0</b></button><div><small>EXAM TRAP CHECKLIST</small><strong>卷子排坑清单 · 判断高频替换</strong></div><span>先判断，再看替换词</span></nav><div id="examTrapGrid" class="exam-trap-grid"></div></div></section>
+<section id="currentFlashView" class="view flash-view"><nav class="page-top"><button id="currentFlashBack">← 返回月半时政</button><div><small id="currentFlashEyebrow">MONTHLY CURRENT AFFAIRS</small><strong id="currentFlashTopic">月半时政学习</strong></div><span id="currentFlashProgress">1 / 1</span></nav><div class="flash-stage"><article id="currentFlashCard" class="flash-card current-question-card"><div class="flash-front"><span id="currentFlashLevel">消化清单</span><small id="currentFlashSource"></small><h2 id="currentFlashQuestion"></h2><div id="currentFlashOptions" class="current-flash-options"></div><button id="currentFlashFlip">核对答案</button><div id="currentFlashFeedback" class="current-inline-feedback hidden"><h3 id="currentFlashAnswer"></h3><ul id="currentFlashPoints"></ul><p><b>易错提醒</b><span id="currentFlashTrap"></span></p><div class="memory-hook"><strong id="currentFlashMemory"></strong></div></div></div></article><div class="flash-controls"><button id="currentFlashPrev">← 上一张</button><button id="currentFlashStar" class="star-card">☆ 标星</button><button id="currentFlashAgain">还不熟</button><button id="currentFlashKnown">记住了 ✓</button><button id="currentFlashNext">下一张 →</button></div></div></section>
+<section id="currentNotesView" class="view current-notes-view">
+  <nav class="page-top"><button id="currentNotesBack">← 返回月半时政</button><div><small>STUDY NOTES</small><strong>月半时政备考备注</strong></div><span id="currentNotesTotal">0 条</span></nav>
+  <div class="current-notes-layout">
+    <aside class="current-note-editor">
+      <div class="current-note-editor-heading"><span>+</span><div><h2 id="currentNoteEditorTitle">添加一条备注</h2><p>记录备考提醒，也可以粘贴或上传截图。</p></div></div>
+      <label>对应半月<select id="currentNoteVolume"></select></label>
+      <label>提示内容<textarea id="currentNoteText" rows="7" placeholder="例如：本月两颗星内容先听；这组数字容易互换……"></textarea></label>
+      <div id="currentNoteImagePreview" class="current-note-image-preview"></div>
+      <div class="current-note-editor-actions"><label class="current-note-upload">添加截图<input id="currentNoteImages" type="file" accept="image/*" multiple hidden></label><button id="currentNoteCancel" class="hidden">取消编辑</button><button id="currentNoteSave">保存备注</button></div>
+    </aside>
+    <section class="current-note-library">
+      <header><div><h2>我的月半时政备考夹</h2><p>文字与截图集中收纳，不计入学习进度。</p></div><label>筛选<select id="currentNotesFilter"></select></label></header>
+      <div id="currentNotesList" class="current-notes-list"></div>
+    </section>
+  </div>
+  <div id="currentNoteLightbox" class="current-note-lightbox hidden" role="dialog" aria-modal="true" aria-label="查看截图"><button id="currentNoteLightboxClose" aria-label="关闭">×</button><img id="currentNoteLightboxImage" alt="备考截图大图"></div>
+</section>
+<section id="commonDigestView" class="view common-digest-view">
+  <nav class="page-top"><button id="commonPoliticsBack">← 政治理论</button><div><small>常识判断</small><strong>常识消化清单</strong></div><button id="commonLawCourse">法律课程 →</button></nav>
+  <div class="common-heading"><p id="commonDigestSummary"></p><span>快速记忆</span></div>
+  <p class="common-source-note">每点一次显示一空，全部显示后再点下一张；也可按空格键。</p>
+  <div id="commonDigestGrid" class="common-digest-grid"></div>
+</section>
+<section id="commonQuickView" class="view common-quick-view">
+  <nav class="page-top"><button id="commonQuickBack">← 常识目录</button><div><small>快速记忆</small><strong id="commonQuickTitle"></strong></div><span id="commonQuickProgress"></span></nav>
+  <div class="common-quick-stage"><div class="common-quick-sheet"><article id="commonQuickCard" class="common-quick-card" role="button" tabindex="0" aria-label="显示答案" aria-describedby="commonQuickHint"><div id="commonQuickContent" class="common-quick-content"><small id="commonQuickTopic"></small><h2 id="commonQuickQuestion"></h2><div id="commonQuickMemory" class="common-memory" hidden></div></div></article><div id="commonQuickMemorySources" class="common-memory-sources" hidden></div></div></div>
+  <div class="common-quick-footer"><button id="commonQuickPrev" type="button" aria-label="上一页，返回上一张记忆卡">← 上一页</button><p id="commonQuickHint" aria-live="polite">每点一次显示一空</p><span>空格 / 回车</span></div>
+</section>
+<section id="knowledgeView" class="view knowledge-view"><nav class="page-top"><button class="back-hub">← 返回两大板块</button><div><small>法律常识</small><strong id="knowledgeTitle">选择板块，连续学习</strong></div><span id="knowledgeCounter">1 / 1</span></nav><div class="knowledge-toolbar"><div id="knowledgeFilters"></div><button id="flashStart" class="flash-start" hidden>继续学习 →</button><p>点击板块直接进入 · 按课程顺序连续学习</p></div><div id="knowledgeCards" class="knowledge-cards" hidden></div><nav class="knowledge-pager" hidden><button id="knowledgePrev">← 上一页</button><span id="knowledgePage"></span><button id="knowledgeNext">下一页 →</button></nav></section>
+<section id="flashView" class="view flash-view"><nav class="page-top"><button id="flashBack">← 返回常识目录</button><div><small>FLASH CARDS</small><strong id="flashTopic">常识闪卡</strong></div><span id="flashProgress">1 / 20</span></nav><div class="flash-stage"><article id="flashCard" class="flash-card"><div class="flash-front"><span id="flashLevel">S · 法律</span><small>先在脑中作答，再点击翻面</small><h2 id="flashQuestion"></h2><button id="flashFlip">查看答案</button></div><div class="flash-back"><span>核心答案</span><h3 id="flashAnswer"></h3><ul id="flashPoints"></ul><div class="memory-hook"><small>讲话稿记忆钩子</small><strong id="flashMemory"></strong></div><p><b>易错提醒</b><span id="flashTrap"></span></p><button id="flashFlipBack">返回题面</button></div></article><div class="flash-controls"><button id="flashPrev">← 上一张</button><button id="flashStar" class="star-card">☆ 标星</button><button id="flashAgain">还不熟</button><button id="flashKnown">记住了 ✓</button><button id="flashNext">下一张 →</button></div></div></section>
+<section id="homeView" class="view active politics-shell"><aside class="politics-rail"><div><button class="selected" data-politics-view="theory"><i>01</i><span>理论部分</span></button><button data-politics-view="current"><i>02</i><span>月半时政</span></button><button data-politics-view="majorTopic"><i>03</i><span>重大专题</span></button><button data-politics-view="examTrap"><i>04</i><span>卷子排坑</span></button></div></aside><div class="politics-page-body">
+  <div class="theory-subnav hidden"><div><button class="selected" data-page="xixiang">习思想</button><button data-page="mayuan">马克思主义基本原理</button></div></div>
+  <div class="workspace">
+    <section class="entry-card">
+      <div class="daily-flow">
+        <div id="reviewStage" class="flow-step active" role="button" tabindex="0"><span class="flow-number">01</span><div><small id="reviewModeLabel">消化清单复习</small><strong><b id="dueCount">0</b><span id="reviewUnit"> 条到期卡</span></strong></div><i id="reviewState">今日待完成</i></div>
+        <span class="flow-arrow">→</span>
+        <div id="newStage" class="flow-step" role="button" tabindex="0"><span class="flow-number">02</span><div><small id="newModeLabel">消化清单新学习</small><strong><b id="newCount">0</b><span id="newUnit"> 条新知识</span></strong></div><i>可直接开始</i></div>
+      </div>
+      <div class="learning-route" aria-label="学习路径">
+        <button id="digestStep"><span>01</span><div><b>消化清单</b><small>先学框架与固定表述</small></div><i id="digestState">待学习</i></button>
+        <span>或</span>
+        <button id="practiceStep"><span>02</span><div><b>排坑手册</b><small>辨析错误与易混项</small></div><i id="practiceState">全库混合</i></button>
+      </div>
+      <div class="directory-title hidden"><b id="directoryModeTitle">政治理论全册混合</b></div>
+      <div id="sectionPicker" class="section-picker hidden"></div>
+      <nav id="sectionPager" class="section-pager hidden" aria-label="板块分页"><button id="sectionPrev">← 上一页</button><span id="sectionPage">板块 1 / 1</span><button id="sectionNext">下一页 →</button></nav>
+      <div class="count-label"><label>本次学习量</label><span>习思想与马克思主义基本原理全册随机混合</span></div><div class="count-picker"><button class="selected" data-count="8">8条 <small>快速</small></button><button data-count="12">12条 <small>标准</small></button><button data-count="20">20条 <small>强化</small></button></div>
+      <button id="startBtn" class="primary-btn"><span>当前板块优先抽题</span><span>→</span></button>
+      <div class="coverage-strip">
+        <div class="coverage-title"><span id="coverageLabel">消化清单掌握度</span><strong><b id="coverageIncluded">154</b> / <b id="coverageTotal">154</b> 条</strong></div>
+        <div class="coverage-track"><i id="coverageBar"></i></div>
+        <div class="coverage-meta"><span>已学习 <b id="coverageLearned">0</b></span><span>待学习 <b id="coverageRemaining">154</b></span><em>题库收录 100%</em></div>
+      </div>
+    </section>
+    <aside class="side-panel"><div class="panel-title"><span>学习进度</span><small>本机自动保存</small></div><div class="today-volume"><small>今日答题</small><strong id="todayDone">0</strong><span>题</span><i>每完成一道立即计入</i></div><div class="stats"><div><strong id="totalDone">0</strong><span>累计答题</span></div><div><strong id="accuracy">—</strong><span>总正确率</span></div></div><div class="ink-line"></div><h3>高频失分原因</h3><div id="weaknessList" class="weakness-list"><p class="empty">完成练习后，这里会生成你的失分画像。</p></div><button id="reviewBtn" class="text-btn">回练错题 <span id="wrongCount">0</span> →</button></aside>
+  </div></div>
+</section>
+<section id="digestView" class="view digest-view">
+  <nav class="digest-nav"><button id="digestBack">← 返回板块</button><div><small>消化清单学习</small><strong id="digestTitle">总论</strong></div><span id="digestProgress">1 / 1</span></nav>
+  <div class="digest-reader"><article class="digest-card"><div class="digest-card-meta"><span id="digestKind">固定表述</span><small id="digestSource"></small></div><h2 id="digestPrompt"></h2><div class="digest-core"><small id="digestCoreLabel">应记原句</small><strong id="digestCore"></strong></div><p><b>易混提醒</b><span id="digestTip"></span></p></article></div>
+  <div class="digest-actions"><button id="digestPrev" class="secondary-btn">← 上一条</button><span id="digestPageLabel">第 1 条</span><button id="digestStar" class="secondary-btn star-card">☆ 标星</button><button id="digestAgain" class="secondary-btn">还不熟</button><button id="digestNext" class="primary-btn">记住了，下一条 →</button><button id="digestComplete" class="primary-btn hidden">记住了，完成本组 →</button></div>
+</section>
+<section id="notebookView" class="view notebook-view"><nav class="page-top"><button id="notebookBack">← 返回学习页</button><div><small>STARRED NOTEBOOK</small><strong>重点笔记本</strong></div><span id="notebookCount">0 条</span></nav><div class="notebook-heading"><div><h1>一次看完标星重点</h1><p>这里只做集中浏览，不计学习、答题或复习进度。</p></div><button id="notebookClear">清空全部</button></div><div id="notebookList" class="notebook-list"></div></section>
+<section id="quizView" class="view quiz-view">
+  <nav class="quiz-nav"><button id="exitBtn">← 退出练习</button><div class="progress-wrap"><span id="progressText">1 / 8</span><div class="progress"><i id="progressBar"></i></div></div><span id="quizTopic"></span></nav>
+  <article class="question-card"><div id="answerBadge" class="answer-badge hidden" aria-live="polite"></div><div class="question-meta"><span id="questionType"></span><span id="trapTag"></span></div><h2 id="questionText"></h2><div id="options" class="options"></div><div id="theoryConnections" class="theory-connections hidden"></div><div class="question-actions"><button id="prevQuestionBtn" class="secondary-btn prev-question hidden">← 上一题</button><button id="nextBtn" class="primary-btn next-btn hidden">下一题 <span>→</span></button></div></article>
+</section>
+<section id="resultView" class="view result-view"><div class="result-mark"><span>本次掌握度</span><strong id="resultScore">0</strong><small>分</small></div><p class="eyebrow">SESSION COMPLETE</p><h1 id="resultTitle"></h1><p id="resultDesc" class="lead"></p><div id="resultBreakdown" class="result-breakdown"></div><div class="result-actions"><button id="continueBtn" class="primary-btn hidden">继续今日新学习 →</button><button id="retryBtn" class="primary-btn">只练本次错题</button><button id="homeBtn" class="secondary-btn">返回首页</button></div></section>
+</main>
+<footer>知政 · 每一次辨析，都算数 <span>ZHIZHENG STUDY LAB</span></footer>
+<script src="study-emphasis.js?v=20260911"></script>
+<script src="common-digest-data.js?v=20260909"></script>
+<script src="common-memory-data.js?v=20260909-memory"></script>
+<script src="manual-bank.js?v=20260730-verified"></script>
+<script src="digest-bank.js?v=20260812-independent"></script>
+<script src="verified-targets.js?v=20260803-strictcheck"></script>
+<script src="knowledge-data.js?v=20260819-law-memory-contrast"></script><script src="current-affairs-data.js?v=20260927-september-upper"></script><script src="current-affairs-course-emphasis.js?v=20260812"></script><script src="current-affairs-july-lower.js?v=20260923-digest-verified"></script><script src="current-affairs-august-upper.js?v=20260830-course-focus"></script><script src="current-affairs-digest-checklists.js?v=20260927-september-upper"></script><script src="major-topic-data.js?v=20260912-integrity"></script><script src="exam-trap-data.js?v=20260929-trap-categories"></script><script src="app.js?v=20260929-trap-blank-next"></script>
+<script src="common-digest.js?v=20260930-mobile-readable"></script>
+</body></html>

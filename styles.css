@@ -1274,7 +1274,7 @@ footer{border:0;background:transparent;color:#898176;padding:0 18px}
 /* 消化清单的整组答案按钮固定在卡片下沿，正文区域只呈现挖空内容。 */
 #currentFlashView .current-question-card.digest-mode .flash-front>#currentFlashFlip{margin-top:auto!important;margin-bottom:0!important;align-self:center!important;flex:0 0 auto!important}
 
-/* 17 个半月目录保持一屏：宽屏五列四行，窄屏四列五行。 */
+/* 18 个半月目录保持一屏：宽屏五列四行，窄屏四列五行。 */
 #currentView .current-grid{
   grid-template-columns:repeat(5,minmax(0,1fr));
   grid-template-rows:repeat(4,minmax(0,1fr));

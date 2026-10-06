@@ -238,7 +238,7 @@ function allPracticeQuestions(){
 function renderDigest(){
   const q=digestDeck[digestIndex];if(!q)return;
   $('#digestTitle').textContent=`政治理论全册混合 · ${digestSessionMode==='review'?'到期复习':digestSessionMode==='new'?'新学习':'全部浏览'}`;$('#digestProgress').textContent=`${digestIndex+1} / ${digestDeck.length}`;$('#digestPageLabel').textContent=`第 ${digestIndex+1} 条 · 共 ${digestDeck.length} 条`;
-  $('#digestKind').textContent='填空回忆';$('#digestSource').textContent=`《消化清单》PDF 第 ${q.page} 页 · ${q.topic}`;$('#digestPrompt').innerHTML=highlightStudyText(q.prompt);$('#digestCoreLabel').textContent='正确填词';$('#digestCore').textContent=digestCorrectText(q);$('#digestTip').textContent='先遮住答案回忆，再核对固定表述。';
+  $('#digestKind').textContent='填空回忆';$('#digestSource').textContent=`${q.sourceLabel || '《消化清单》PDF'} 第 ${q.page} 页 · ${q.topic}`;$('#digestPrompt').innerHTML=highlightStudyText(q.prompt);$('#digestCoreLabel').textContent='正确填词';$('#digestCore').textContent=digestCorrectText(q);$('#digestTip').textContent='先遮住答案回忆，再核对固定表述。';
   updateStarButton($('#digestStar'),`digest:${questionKey(q)}`);
   $('#digestPrev').disabled=digestIndex===0;const last=digestIndex===digestDeck.length-1;$('#digestNext').classList.toggle('hidden',last);$('#digestComplete').classList.toggle('hidden',!last)
 }

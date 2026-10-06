@@ -2,6 +2,7 @@
 let commonQuickDeck = [], commonQuickIndex = 0, commonQuickGroup = '', commonQuickRevealCount = 0;
 
 function commonPool(groupId) {
+  if (groupId === 'sprint') return COMMON_DIGEST.cards.filter(card => card.sprintSupplement);
   return COMMON_DIGEST.cards.filter(card => card.group === groupId);
 }
 
@@ -10,7 +11,7 @@ function openCommonDigest() {
   $('#commonDigestGrid').innerHTML = COMMON_DIGEST.groups.map((group, index) => {
     const cards = commonPool(group.id);
     return `<article class="common-group-card"><small>${String(index + 1).padStart(2, '0')}</small><div class="common-group-copy"><h2>${escapeHTML(group.name)}</h2><p>${escapeHTML(group.description)}</p><div class="common-group-stats"><span>${cards.length} 张记忆卡</span></div></div><div class="common-group-actions"><button data-common-practice="${group.id}">开始速记 →</button></div></article>`;
-  }).join('');
+  }).join('') + `<article class="common-group-card"><small>★</small><div class="common-group-copy"><h2>冲刺班新增</h2><p>新法与文史科技地理易混点，可集中速记</p><div class="common-group-stats"><span>${commonPool('sprint').length} 张记忆卡</span></div></div><div class="common-group-actions"><button data-common-practice="sprint">集中速记 →</button></div></article>`;
   $$('[data-common-practice]').forEach(button => button.onclick = () => startCommonDigest(button.dataset.commonPractice));
   show('commonDigest');
   $$('[data-main]').forEach(button => button.classList.toggle('selected', button.dataset.main === 'knowledge'));

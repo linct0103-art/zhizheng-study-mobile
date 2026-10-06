@@ -1320,3 +1320,30 @@ footer{border:0;background:transparent;color:#898176;padding:0 18px}
 #currentFlashView .judgment-result.is-correct b{color:#3d714c}
 #currentFlashView .judgment-result.is-wrong b{color:#b63237}
 @media(max-height:700px){#currentFlashView .current-flash-options .judgment-choice{min-height:38px;font-size:13px}}
+
+/* 资料题目的入口同时显示已学数量与进度，整块区域都可点击。 */
+#currentView .current-grid .current-actions.current-actions-training button.current-question-entry{
+  display:flex!important;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:3px;
+  padding:3px 8px!important;
+  line-height:1.1!important;
+}
+#currentView .current-grid .current-question-entry>span{display:block;white-space:nowrap}
+#currentView .current-grid .current-question-entry>em{
+  display:block;
+  width:min(100%,130px);
+  height:3px;
+  border-radius:99px;
+  overflow:hidden;
+  background:#ddd7ce;
+}
+#currentView .current-grid .current-question-entry>em>u{
+  display:block;
+  height:100%;
+  border-radius:inherit;
+  background:#b63237;
+  transition:width .25s ease;
+}

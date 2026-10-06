@@ -1,4 +1,4 @@
-// 冲刺班清单只补充旧清单与月半时政尚未覆盖的易混考点。
+// 冲刺班独立题库：选取旧清单与月半时政尚未覆盖的易混考点。
 // 页码均为《国省考冲刺-政治理论&常识判断》PDF 的实际页码。
 const sprintDigestSource = '【消化清单】国省考冲刺-政治理论&常识判断.pdf';
 
@@ -10,11 +10,6 @@ const sprintTheoryCards = [
   { id: 'sprint-theory-party-politics', section: 'x-party', topic: '党的建设', page: 21,
     prompt: '党的政治建设是党的____建设，必须摆在____。', answers: ['根本性', '首位'] }
 ];
-digestBank.push(...sprintTheoryCards.map(card => ({
-  ...card, cat: 'xixiang', answer: card.answers.join('；'), source: sprintDigestSource,
-  sourceLabel: '冲刺班《消化清单》PDF'
-})));
-
 // 题面与答案分离；每个下划线对应一次点击，保持手机端原有的速记节奏。
 const sprintCommonRows = [
   ['history', '古田会议', 72, '古田会议确立了____、____的原则。', ['思想建党', '政治建军'], 'https://www.12371.cn/2021/02/09/ARTI1612833488693964.shtml'],
@@ -49,11 +44,18 @@ const sprintCommonCards = sprintCommonRows.map(([group, title, page, question, d
     id: `sprint-common-${String(index + 1).padStart(3, '0')}`,
     group, volume: sprintGroupNames[group], category: '常识判断', title, topic: title,
     question, answer: question.replace(/_{2,}/g, () => digestTerms[answerIndex++]), digestTerms,
-    digestChecklist: true, studyLabel: '常识消化清单', digestPage: page, endPage: page,
+    digestChecklist: true, studyLabel: '冲刺班消化清单', digestPage: page, endPage: page,
     sourceFile: sprintDigestSource, answerSource: referenceUrl, referenceUrl, sprintSupplement: true
   };
 });
-COMMON_DIGEST.cards.push(...sprintCommonCards);
-for (const group of COMMON_DIGEST.groups) {
-  group.count += sprintCommonCards.filter(card => card.group === group.id).length;
-}
+const sprintTheoryQuickCards = sprintTheoryCards.map(card => ({
+  id: card.id, group: 'theory', volume: '冲刺班 · 政治理论', category: '政治理论',
+  title: card.topic, topic: card.topic, question: card.prompt, digestTerms: card.answers,
+  answer: card.prompt.replace(/_{2,}/g, (() => { let i = 0; return () => card.answers[i++]; })()),
+  digestChecklist: true, studyLabel: '冲刺班消化清单', digestPage: card.page, endPage: card.page,
+  sourceFile: sprintDigestSource, sprintSupplement: true
+}));
+const SPRINT_DIGEST = {
+  source: sprintDigestSource,
+  cards: [...sprintTheoryQuickCards, ...sprintCommonCards]
+};

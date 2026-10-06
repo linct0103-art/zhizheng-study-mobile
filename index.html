@@ -14,12 +14,12 @@
 <div class="grain"></div>
 <header>
   <a class="brand" href="#"><span class="brand-mark">知</span><span>知政</span></a>
-  <nav class="subject-nav" aria-label="学习导航"><button class="selected" data-main="politics"><span>01</span>政治理论</button><button data-main="knowledge"><span>02</span>常识判断</button><button id="notebookEntry"><span>★</span>重点本</button></nav>
-  <div class="header-meta"><span id="today"></span><span class="divider"></span><span>政治：消化清单＋排坑手册　·　常识：五类清单＋法律课程</span></div>
+  <nav class="subject-nav" aria-label="学习导航"><button class="selected" data-main="politics"><span>01</span>政治理论</button><button data-main="knowledge"><span>02</span>常识判断</button><button data-main="sprint"><span>03</span>冲刺班</button><button id="notebookEntry"><span>★</span>重点本</button></nav>
+  <div class="header-meta"><span id="today"></span><span class="divider"></span><span>政治理论 · 常识判断 · 冲刺班</span></div>
 </header>
 <main>
 <section id="hubView" class="view study-hub" aria-hidden="true">
-  <div class="hub-heading"><p>今日学习入口</p><h1>两大板块，分开学清楚</h1><span>政治理论重体系与辨错；常识重高频积累和碎片复习。</span></div>
+  <div class="hub-heading"><p>今日学习入口</p><h1>基础板块，分开学清楚</h1><span>冲刺班可从顶部独立入口进入。</span></div>
   <div class="hub-grid">
     <article class="hub-card politics-card"><small>01 · 政治理论</small><h2>理论 + 月半时政</h2><p>理论：消化清单＋排坑手册；月半时政：消化清单＋资料题目。</p><div><button id="openTheory"><b>理论学习</b><span>清单学习 · 手册排坑 →</span></button><button id="openCurrent"><b>月半时政</b><span>清单挖空 · 资料做题 →</span></button></div></article>
     <article class="hub-card knowledge-card"><small>02 · 常识判断</small><h2>五类常识消化清单</h2><p>文史、科技、经济、地理、法律：每点一次显示一空，全部显示后再点进入下一张。</p><div class="priority-preview"><span><i>01</i>五类常识一页选择</span><span><i>02</i>即点即看，快速记忆</span><span><i>03</i>保留法律课程入口</span></div><button id="openKnowledge" class="hub-primary">进入常识清单 →</button></article>
@@ -55,6 +55,12 @@
   <div class="common-heading"><p id="commonDigestSummary"></p><span>快速记忆</span></div>
   <p class="common-source-note">每点一次显示一空，全部显示后再点下一张；也可按空格键。</p>
   <div id="commonDigestGrid" class="common-digest-grid"></div>
+</section>
+<section id="sprintView" class="view common-digest-view sprint-digest-view">
+  <nav class="page-top"><button id="sprintBack">← 政治理论</button><div><small>国省考冲刺班</small><strong>政治理论 &amp; 常识判断消化清单</strong></div><span>冲刺速记</span></nav>
+  <div class="common-heading"><p id="sprintDigestSummary"></p><span>按专题或一体学习</span></div>
+  <div id="sprintDigestGrid" class="common-digest-grid"></div>
+  <p class="common-source-note">每点一次显示一空，全部显示后再点进入下一张。</p>
 </section>
 <section id="commonQuickView" class="view common-quick-view">
   <nav class="page-top"><button id="commonQuickBack">← 常识目录</button><div><small>快速记忆</small><strong id="commonQuickTitle"></strong></div><span id="commonQuickProgress"></span></nav>
@@ -109,8 +115,8 @@
 <script src="common-memory-data.js?v=20260909-memory"></script>
 <script src="manual-bank.js?v=20260930-mobile-click-fix"></script>
 <script src="digest-bank.js?v=20260930-mobile-click-fix"></script>
-<script src="sprint-digest-supplements.js?v=20261006-sprint"></script>
+<script src="sprint-digest-supplements.js?v=20261006-board"></script>
 <script src="verified-targets.js?v=20260930-mobile-click-fix"></script>
-<script src="knowledge-data.js?v=20260930-mobile-click-fix"></script><script src="current-affairs-data.js?v=20261006-september-lower"></script><script src="current-affairs-course-emphasis.js?v=20260930-mobile-click-fix"></script><script src="current-affairs-july-lower.js?v=20260923-digest-verified"></script><script src="current-affairs-august-upper.js?v=20260830-course-focus"></script><script src="current-affairs-digest-checklists.js?v=20261006-september-lower"></script><script src="major-topic-data.js?v=20260912-integrity"></script><script src="exam-trap-data.js?v=20261006-second-batch"></script><script src="app.js?v=20261006-sprint"></script>
-<script src="common-digest.js?v=20261006-sprint"></script>
+<script src="knowledge-data.js?v=20260930-mobile-click-fix"></script><script src="current-affairs-data.js?v=20261006-september-lower"></script><script src="current-affairs-course-emphasis.js?v=20260930-mobile-click-fix"></script><script src="current-affairs-july-lower.js?v=20260923-digest-verified"></script><script src="current-affairs-august-upper.js?v=20260830-course-focus"></script><script src="current-affairs-digest-checklists.js?v=20261006-september-lower"></script><script src="major-topic-data.js?v=20260912-integrity"></script><script src="exam-trap-data.js?v=20261006-second-batch"></script><script src="app.js?v=20261006-sprint-board"></script>
+<script src="common-digest.js?v=20261006-sprint-board"></script>
 </body></html>

@@ -2,7 +2,9 @@
 let commonQuickDeck = [], commonQuickIndex = 0, commonQuickGroup = '', commonQuickRevealCount = 0;
 
 function commonPool(groupId) {
-  if (groupId === 'sprint') return COMMON_DIGEST.cards.filter(card => card.sprintSupplement);
+  if (groupId === 'sprint') return SPRINT_DIGEST.cards;
+  if (groupId === 'sprint-theory') return SPRINT_DIGEST.cards.filter(card => card.group === 'theory');
+  if (groupId === 'sprint-common') return SPRINT_DIGEST.cards.filter(card => card.group !== 'theory');
   return COMMON_DIGEST.cards.filter(card => card.group === groupId);
 }
 
@@ -11,10 +13,27 @@ function openCommonDigest() {
   $('#commonDigestGrid').innerHTML = COMMON_DIGEST.groups.map((group, index) => {
     const cards = commonPool(group.id);
     return `<article class="common-group-card"><small>${String(index + 1).padStart(2, '0')}</small><div class="common-group-copy"><h2>${escapeHTML(group.name)}</h2><p>${escapeHTML(group.description)}</p><div class="common-group-stats"><span>${cards.length} 张记忆卡</span></div></div><div class="common-group-actions"><button data-common-practice="${group.id}">开始速记 →</button></div></article>`;
-  }).join('') + `<article class="common-group-card"><small>★</small><div class="common-group-copy"><h2>冲刺班新增</h2><p>新法与文史科技地理易混点，可集中速记</p><div class="common-group-stats"><span>${commonPool('sprint').length} 张记忆卡</span></div></div><div class="common-group-actions"><button data-common-practice="sprint">集中速记 →</button></div></article>`;
+  }).join('');
   $$('[data-common-practice]').forEach(button => button.onclick = () => startCommonDigest(button.dataset.commonPractice));
   show('commonDigest');
   $$('[data-main]').forEach(button => button.classList.toggle('selected', button.dataset.main === 'knowledge'));
+}
+
+function openSprintDigest() {
+  $('#sprintDigestSummary').textContent = `政治理论 ${commonPool('sprint-theory').length} 张 · 常识判断 ${commonPool('sprint-common').length} 张`;
+  $('#sprintDigestGrid').innerHTML = [
+    ['sprint-theory', '01', '政治理论', '改革、法治与党的建设固定表述'],
+    ['sprint-common', '02', '常识判断', '2026 年新法、文史科技与地理易混点'],
+    ['sprint', '∞', '一体学习', '政治理论与常识判断连续速记']
+  ].map(([id, number, title, description]) => `<article class="common-group-card"><small>${number}</small><div class="common-group-copy"><h2>${title}</h2><p>${description}</p><div class="common-group-stats"><span>${commonPool(id).length} 张记忆卡</span></div></div><div class="common-group-actions"><button data-sprint-practice="${id}">开始速记 →</button></div></article>`).join('');
+  $$('[data-sprint-practice]').forEach(button => button.onclick = () => startCommonDigest(button.dataset.sprintPractice));
+  show('sprint');
+  $$('[data-main]').forEach(button => button.classList.toggle('selected', button.dataset.main === 'sprint'));
+}
+
+function returnFromQuick() {
+  if (commonQuickGroup.startsWith('sprint')) openSprintDigest();
+  else openCommonDigest();
 }
 
 function startCommonDigest(groupId) {
@@ -49,6 +68,7 @@ function renderCommonQuick() {
   if (!card) return;
   commonQuickRevealCount = 0;
   $('#commonQuickTitle').textContent = card.volume;
+  $('#commonQuickBack').textContent = commonQuickGroup.startsWith('sprint') ? '← 冲刺班' : '← 常识目录';
   $('#commonQuickTopic').textContent = card.title;
   $('#commonQuickProgress').textContent = `${commonQuickIndex + 1} / ${commonQuickDeck.length}`;
   $('#commonQuickQuestion').innerHTML = renderCommonQuickQuestion(card, 0);
@@ -133,7 +153,7 @@ function advanceCommonQuick() {
   if (commonQuickIndex === commonQuickDeck.length - 1) {
     commonQuickIndex = 0;
     saveCommonQuickPosition();
-    openCommonDigest();
+    returnFromQuick();
     return;
   }
   commonQuickIndex++;
@@ -143,7 +163,8 @@ function advanceCommonQuick() {
 
 $('#commonPoliticsBack').onclick = openPolitics;
 $('#commonLawCourse').onclick = openLawKnowledge;
-$('#commonQuickBack').onclick = () => { saveCommonQuickPosition(); openCommonDigest(); };
+$('#commonQuickBack').onclick = () => { saveCommonQuickPosition(); returnFromQuick(); };
+$('#sprintBack').onclick = openPolitics;
 $('#commonQuickCard').onclick = advanceCommonQuick;
 $('#commonQuickCard').onkeydown = event => {
   if (event.key !== ' ' && event.key !== 'Enter') return;

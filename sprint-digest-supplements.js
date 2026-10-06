@@ -59,3 +59,33 @@ const SPRINT_DIGEST = {
   source: sprintDigestSource,
   cards: [...sprintTheoryQuickCards, ...sprintCommonCards]
 };
+
+// 这些页面在旧题库中没有可靠的同句匹配，按讲义原文另制短卡。
+const sprintExtraRows = [
+  ['current', 31, '“十四五”经济规模', '“十四五”时期，国内生产总值连续跨越110万、120万、130万、____万亿元台阶。', ['140']],
+  ['current', 33, '新型城镇化', '推进以人为本的新型城镇化，坚持城市____发展。', ['内涵式']],
+  ['current', 34, '健康中国', '到____年建成健康中国，是党中央作出的战略决策。', ['2035']],
+  ['current', 37, '习近平党建思想', '新时代党的建设坚持以党的____建设为统领。', ['政治']],
+  ['current', 50, '全面依法治国', '全面推进依法治国，坚持党的领导、人民当家作主、____有机统一。', ['依法治国']],
+  ['current', 56, '长期护理保险', '长期护理保险费由____和____按规定比例分担。', ['用人单位', '个人']],
+  ['current', 59, '生态环境法典', '生态环境法典采用“____统领、____配套衔接”的分层立法格局。', ['法典', '单行法']],
+  ['current', 60, '常态化精准帮扶', '常态化精准帮扶守牢不发生____性返贫致贫底线。', ['规模']],
+  ['current', 62, '农村土地延包', '第二轮土地承包到期后延包，坚持以____为单位开展延包。', ['户']],
+  ['geography', 94, '中国地形', '____高原海拔世界最高，被称为“世界屋脊”。', ['青藏']],
+  ['geography', 94, '中国盆地', '____盆地是我国最大的内流盆地。', ['塔里木']],
+  ['geography', 96, '秦岭—淮河一线', '秦岭—淮河一线大致是年降水量____毫米线。', ['800']],
+  ['law', 109, '抢劫罪', '抢劫罪通常通过____、____等方法强行劫取公私财物。', ['暴力', '胁迫']],
+  ['law', 111, '治安管理处罚', '治安管理处罚针对违反治安管理但尚未构成____的行为。', ['犯罪']]
+];
+SPRINT_DIGEST.cards.push(...sprintExtraRows.map(([group, page, title, question, digestTerms], index) => {
+  if ((question.match(/_{2,}/g) || []).length !== digestTerms.length) throw new Error(`冲刺补充卡填空不匹配：${title}`);
+  let answerIndex = 0;
+  const volumeNames = { current: '时政热点', geography: '地理常识', law: '法律常识' };
+  return {
+    id: `sprint-extra-${String(index + 1).padStart(3, '0')}`,
+    group, volume: `冲刺班 · ${volumeNames[group]}`, category: volumeNames[group], title, topic: title,
+    question, answer: question.replace(/_{2,}/g, () => digestTerms[answerIndex++]), digestTerms,
+    digestChecklist: true, studyLabel: '冲刺班消化清单', digestPage: page, endPage: page,
+    sourceFile: sprintDigestSource, sprintSupplement: true
+  };
+}));

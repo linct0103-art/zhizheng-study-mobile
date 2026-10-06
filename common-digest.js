@@ -1,10 +1,71 @@
 // Rapid browsing keeps only a resume position; it never schedules reviews or grades recall.
 let commonQuickDeck = [], commonQuickIndex = 0, commonQuickGroup = '', commonQuickRevealCount = 0;
+let sprintDeckReady = false;
+
+function expandSprintDigest() {
+  if (sprintDeckReady) return;
+  const theoryById = new Map(digestBank.map(card => [card.id, card]));
+  const commonById = new Map(COMMON_DIGEST.cards.map(card => [card.id, card]));
+  const currentById = SPRINT_CURRENT_SOURCE;
+  const stripNumber = text => String(text || '').replace(/^\s*(?:[（(]?\d{1,2}[）)、.]\s*)+/, '');
+  const fill = (question, terms) => {
+    let index = 0;
+    return question.replace(/_{2,}/g, () => terms[index++]);
+  };
+  const currentTerm = (source, answer) => {
+    const preferred = currentKeyTerms(source).find(value => value.length >= 3 && value.length <= 22 && answer.includes(value) && !/^\d{4}\s*年/.test(value));
+    if (preferred) return preferred;
+    const quoted = [...answer.matchAll(/[“「]([^”」]{3,16})[”」]/g)]
+      .map(match => match[1]).find(value => /[\u4e00-\u9fa5]/.test(value) && !/第\d+期|求是/.test(value));
+    if (quoted) return quoted;
+    const keyword = answer.match(/(?:根本|核心|关键|首要|必须|坚持|应当|标志|推动|建设)[^，。；、]{3,14}/)?.[0];
+    if (keyword) return keyword;
+    const clauses = answer.split(/[，。；：]/).map(text => text.trim()).filter(text => /[\u4e00-\u9fa5]{4}/.test(text) && !/^\d{4}\s*年/.test(text));
+    const clause = clauses.find(text => text.length >= 6 && text.length <= 20) || clauses.find(text => text.length > 20);
+    return clause ? clause.slice(0, 16) : '';
+  };
+  const matchedTheory = SPRINT_MATCHES.theory.map(([id, page]) => {
+    const source = theoryById.get(id);
+    if (!source) return null;
+    const question = stripNumber(source.prompt);
+    const terms = source.answers || [];
+    if (!terms.length || (question.match(/_{2,}/g) || []).length !== terms.length) return null;
+    return { id: `sprint-reuse-${id}`, group: 'theory', volume: '冲刺班 · 政治理论',
+      category: '政治理论', title: source.topic, topic: source.topic, question,
+      answer: fill(question, terms), digestTerms: terms, digestPage: page,
+      sourceFile: SPRINT_DIGEST.source, originalCardId: id, sprintMatched: true };
+  }).filter(Boolean);
+  const matchedCurrent = SPRINT_MATCHES.current.map(([id, page]) => {
+    if (typeof CURRENT_MISGROUPED_CARD_IDS !== 'undefined' && CURRENT_MISGROUPED_CARD_IDS.has(id)) return null;
+    const source = currentById.get(id);
+    if (!source) return null;
+    const answer = currentCleanText(source.answer).trim();
+    const term = currentTerm(source, answer);
+    if (!term || answer.length > 220) return null;
+    return { id: `sprint-reuse-${id}`, group: 'current', volume: '冲刺班 · 时政热点',
+      category: '时政热点', title: source.title, topic: source.title,
+      question: answer.replace(term, '______'), answer, digestTerms: [term],
+      digestPage: page, sourceFile: SPRINT_DIGEST.source, originalCardId: id, sprintMatched: true };
+  }).filter(Boolean);
+  const matchedCommon = SPRINT_MATCHES.common.map(([id, page]) => {
+    const source = commonById.get(id);
+    if (!source) return null;
+    const question = stripNumber(source.question), answer = stripNumber(source.answer);
+    return { ...source, id: `sprint-reuse-${id}`, volume: `冲刺班 · ${source.volume}`,
+      question, answer, digestPage: page, sourceFile: SPRINT_DIGEST.source,
+      originalCardId: id, sprintMatched: true };
+  }).filter(Boolean);
+  SPRINT_DIGEST.cards.push(...matchedTheory, ...matchedCurrent, ...matchedCommon);
+  SPRINT_DIGEST.cards.sort((a, b) => a.digestPage - b.digestPage || a.id.localeCompare(b.id));
+  sprintDeckReady = true;
+}
 
 function commonPool(groupId) {
+  if (groupId.startsWith('sprint')) expandSprintDigest();
   if (groupId === 'sprint') return SPRINT_DIGEST.cards;
   if (groupId === 'sprint-theory') return SPRINT_DIGEST.cards.filter(card => card.group === 'theory');
-  if (groupId === 'sprint-common') return SPRINT_DIGEST.cards.filter(card => card.group !== 'theory');
+  if (groupId === 'sprint-current') return SPRINT_DIGEST.cards.filter(card => card.group === 'current');
+  if (groupId === 'sprint-common') return SPRINT_DIGEST.cards.filter(card => card.group !== 'theory' && card.group !== 'current');
   return COMMON_DIGEST.cards.filter(card => card.group === groupId);
 }
 
@@ -20,11 +81,12 @@ function openCommonDigest() {
 }
 
 function openSprintDigest() {
-  $('#sprintDigestSummary').textContent = `政治理论 ${commonPool('sprint-theory').length} 张 · 常识判断 ${commonPool('sprint-common').length} 张`;
+  $('#sprintDigestSummary').textContent = `政治理论 ${commonPool('sprint-theory').length} 张 · 时政热点 ${commonPool('sprint-current').length} 张 · 常识判断 ${commonPool('sprint-common').length} 张`;
   $('#sprintDigestGrid').innerHTML = [
     ['sprint-theory', '01', '政治理论', '改革、法治与党的建设固定表述'],
-    ['sprint-common', '02', '常识判断', '2026 年新法、文史科技与地理易混点'],
-    ['sprint', '∞', '一体学习', '政治理论与常识判断连续速记']
+    ['sprint-current', '02', '时政热点', '重要讲话、会议与政策文件'],
+    ['sprint-common', '03', '常识判断', '文史、科技、经济、地理与法律'],
+    ['sprint', '∞', '一体学习', '按照讲义顺序连续速记']
   ].map(([id, number, title, description]) => `<article class="common-group-card"><small>${number}</small><div class="common-group-copy"><h2>${title}</h2><p>${description}</p><div class="common-group-stats"><span>${commonPool(id).length} 张记忆卡</span></div></div><div class="common-group-actions"><button data-sprint-practice="${id}">开始速记 →</button></div></article>`).join('');
   $$('[data-sprint-practice]').forEach(button => button.onclick = () => startCommonDigest(button.dataset.sprintPractice));
   show('sprint');

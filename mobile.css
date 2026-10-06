@@ -6,6 +6,8 @@
   .brand-mark{width:32px;height:32px;font-size:15px}
   .subject-nav{gap:2px;padding:3px;min-width:0}
   .subject-nav button{height:38px;padding:0 8px!important;font-size:11px!important;white-space:nowrap}
+  .sprint-digest-view .common-heading>span{display:none}
+  .sprint-digest-view #sprintDigestSummary{font-size:12px}
   main{width:100%!important;height:auto!important;min-height:calc(100dvh - 72px);padding:10px 0 18px!important;overflow:visible!important}
   .view.active{height:auto!important;min-height:calc(100dvh - 92px);overflow:visible!important;animation:none!important}
   body>footer{display:none!important}

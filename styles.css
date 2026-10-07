@@ -1298,7 +1298,9 @@ footer{border:0;background:transparent;color:#898176;padding:0 18px}
 }
 .exam-trap-view .politics-page-body{min-height:0}
 .exam-trap-top{height:62px;grid-template-columns:1fr 1.35fr 1fr}
-.exam-trap-top>span{text-align:right;color:var(--muted);font-size:11px}
+.exam-trap-review{justify-self:end;min-height:34px;padding:0 13px;border:1px solid #b63237;border-radius:12px;background:#fff8f5;color:#a92d32;font:700 11px var(--sans);white-space:nowrap;cursor:pointer}
+.exam-trap-review b{margin-left:5px;font-size:13px}
+.exam-trap-review:disabled{border-color:#ddd3c9;background:#f9f6f1;color:#938a82;cursor:default}
 .exam-trap-grid{height:calc(100% - 62px);padding:12px 4px 14px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:12px;min-height:0;overflow:hidden}
 .exam-trap-card{min-width:0;min-height:0;border:1px solid #e4d9cc;border-radius:18px;background:rgba(255,252,247,.82);box-shadow:0 8px 22px rgba(71,52,40,.05);padding:10px 12px;display:grid;grid-template-columns:38px minmax(0,1fr) 100px;align-items:center;gap:12px;overflow:hidden}
 .exam-trap-number{display:grid;place-items:center;width:36px;height:36px;border-radius:12px;background:#b63237;color:#fff;font:700 11px var(--sans)}
@@ -1306,7 +1308,7 @@ footer{border:0;background:transparent;color:#898176;padding:0 18px}
 .exam-trap-card em{display:block;width:100%;height:4px;border-radius:99px;background:#e2dcd3;overflow:hidden}.exam-trap-card em u{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#a92d32,#da806c)}
 .exam-trap-card>button{height:32px;border:1px solid #d8cec2;border-radius:11px;background:#fffdf9;color:#423c36;font:700 10px var(--sans);cursor:pointer}.exam-trap-card>button:hover{border-color:#b63237;color:#b63237;transform:translateY(-1px)}
 @media(max-height:700px){.exam-trap-grid{padding:7px 3px 9px;gap:6px 9px}.exam-trap-card{padding:6px 9px;grid-template-columns:31px minmax(0,1fr) 88px;gap:8px;border-radius:14px}.exam-trap-number{width:30px;height:30px;border-radius:9px}.exam-trap-card h2{font-size:14px;margin:2px 0}.exam-trap-card>button{height:28px;font-size:9px}.exam-trap-top{height:54px}.exam-trap-grid{height:calc(100% - 54px)}}
-@media(max-width:760px){.politics-options{grid-template-columns:1fr}.exam-trap-grid{grid-template-columns:1fr;grid-template-rows:none;grid-auto-rows:82px;overflow:auto}.exam-trap-top{grid-template-columns:auto 1fr}.exam-trap-top>span{display:none}.exam-trap-card{grid-template-columns:34px minmax(0,1fr) 88px}}
+@media(max-width:760px){.politics-options{grid-template-columns:1fr}.exam-trap-grid{grid-template-columns:1fr;grid-template-rows:none;grid-auto-rows:82px;overflow:auto}.exam-trap-top{grid-template-columns:auto 1fr}.exam-trap-top>div{grid-column:1/-1;grid-row:1;text-align:center}.exam-trap-top>#examTrapAll{grid-column:1;grid-row:2}.exam-trap-top>#examTrapReview{grid-column:2;grid-row:2;justify-self:stretch}.exam-trap-card{grid-template-columns:34px minmax(0,1fr) 88px}}
 
 /* 卷子排坑先选对错，再在原题上标出被替换的词。 */
 #currentFlashView .current-flash-options:has(.judgment-choice){width:min(430px,100%);grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:auto auto 0;order:2;flex:0 0 auto;align-self:center}

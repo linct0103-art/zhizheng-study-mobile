@@ -474,15 +474,37 @@ function renderMajorTopics(){
   $$('[data-major-topic-lesson]').forEach(button=>button.onclick=()=>{const name=button.dataset.majorTopicLesson;saved.majorTopicLessons[name]=!saved.majorTopicLessons[name];localStorage.setItem('zhizhengStats',JSON.stringify(saved));renderMajorTopics()});
   $$('[data-major-topic]').forEach(button=>button.onclick=()=>startMajorTopic(button.dataset.majorTopic));
 }
+const EXAM_TRAP_REVIEW_INTERVALS=[1,2,4,7,15,30];
+function ensureExamTrapReviewData(){
+  saved.examTrapChoices=saved.examTrapChoices||{};
+  saved.examTrapReview=saved.examTrapReview||{};
+  let changed=false;
+  for(const card of EXAM_TRAP_CARDS){
+    const choice=saved.examTrapChoices[card.id];
+    if(typeof choice==='boolean'&&choice!==card.drillIsCorrect&&!saved.examTrapReview[card.id]){
+      saved.examTrapReview[card.id]={stage:0,next:currentDateKey(),last:currentDateKey(),reviews:0};
+      changed=true;
+    }
+  }
+  if(changed)localStorage.setItem('zhizhengStats',JSON.stringify(saved));
+}
+function examTrapDue(pool=EXAM_TRAP_CARDS){
+  const today=currentDateKey();
+  return pool.filter(card=>saved.examTrapReview[card.id]?.next<=today);
+}
 function renderExamTraps(){
-  ensureCurrentReviewData();
+  ensureCurrentReviewData();ensureExamTrapReviewData();
   const totalLearned=EXAM_TRAP_CARDS.filter(card=>saved.currentKnown[card.id]).length;
+  const due=examTrapDue();
   $('#examTrapAllProgress').textContent=`${totalLearned}/${EXAM_TRAP_CARDS.length}`;
   $('#examTrapAll').setAttribute('aria-label',`连续学习全部卷子排坑判断题，已学 ${totalLearned}/${EXAM_TRAP_CARDS.length}`);
+  $('#examTrapReview').disabled=!due.length;
+  $('#examTrapReview').querySelector('b').textContent=due.length;
+  $('#examTrapReview').setAttribute('aria-label',`今日到期错题复习 ${due.length} 张`);
   $('#examTrapGrid').innerHTML=EXAM_TRAP_GROUPS.map(group=>{
     const cards=EXAM_TRAP_CARDS.filter(card=>card.groupId===group.id),learned=cards.filter(card=>saved.currentKnown[card.id]).length,pct=cards.length?Math.round(learned/cards.length*100):0;
-    const wrong=cards.filter(card=>!card.drillIsCorrect).length;
-    return `<article class="exam-trap-card"><span class="exam-trap-number">${group.symbol}</span><div><small>${escapeHTML(group.description)}</small><h2>${escapeHTML(group.name)}</h2><p>已辨析 ${learned} / ${cards.length} · ${wrong} 个替换坑</p><em><u style="width:${pct}%"></u></em></div><button data-exam-trap="${group.id}">判断排坑 →</button></article>`;
+    const groupDue=examTrapDue(cards).length;
+    return `<article class="exam-trap-card"><span class="exam-trap-number">${group.symbol}</span><div><small>${escapeHTML(group.description)}</small><h2>${escapeHTML(group.name)}</h2><p>已辨析 ${learned} / ${cards.length}${groupDue?` · 今日待复习 ${groupDue}`:''}</p><em><u style="width:${pct}%"></u></em></div><button data-exam-trap="${group.id}">判断排坑 →</button></article>`;
   }).join('');
   $$('[data-exam-trap]').forEach(button=>button.onclick=()=>startExamTrap(button.dataset.examTrap));
 }
@@ -661,7 +683,7 @@ function renderCurrentFlash(){
   const emphasis=currentCourseEmphasis(x),courseLabel=emphasis?.flags?.length?` · 课堂：${emphasis.flags.slice(0,3).join(' / ')}`:'',isQuestion=currentContentKind==='question'||x.reviewKind==='question',isDigest=!isQuestion&&Boolean(x.digestChecklist),isDrill=!isDigest&&(currentContentKind==='drill'||x.reviewKind==='drill'||Boolean(x.drillType)),isExamTrap=currentContentKind==='examTrap',studyText=isQuestion?currentQuestionReference(x):x.answer,studyItem={...x,answer:studyText},volumeMeta=CURRENT_AFFAIRS_VOLUMES.find(v=>v.name===x.volume),studyLabel=x.studyLabel||volumeMeta?.studyLabel||'消化清单';
   $('#currentFlashOptions').classList.toggle('hidden',(isDrill||isDigest)&&!isExamTrap);
   $('#currentFlashCard').classList.remove('flipped','revealed','digest-answer-visible');$('#currentFlashCard').classList.toggle('digest-mode',isDigest);$('#currentFlashFeedback').classList.add('hidden');$('#currentFlashFlip').classList.remove('hidden');$('#currentFlashAnswer').classList.remove('hidden');
-  $('#currentFlashLevel').textContent=(isQuestion?`${x.type} · 资料题目`:isDigest?`挖空题 · ${studyLabel}`:isDrill?'判断训练':`${currentFlashMode==='review'?'今日复习':'新学习'} · ${x.category}`)+courseLabel;
+  $('#currentFlashLevel').textContent=(isQuestion?`${x.type} · 资料题目`:isDigest?`挖空题 · ${studyLabel}`:isDrill&&isExamTrap&&currentFlashMode==='review'?'错题复习':isDrill?'判断训练':`${currentFlashMode==='review'?'今日复习':'新学习'} · ${x.category}`)+courseLabel;
   $('#currentFlashSource').textContent=currentContentKind==='commonDigest'?[x.volume,x.title,`清单 PDF 第${x.digestPage}页`,`答案见讲义 PDF 第${x.answerPage}页`].join(' · '):currentContentKind==='majorDigest'?[x.volume,`清单第${x.digestPage}页`,x.answerPage?`答案第${x.answerPage}页`:'答案经权威来源核对'].join(' · '):currentContentKind==='examTrap'?[x.volume,x.focus,x.verifiedSource].filter(Boolean).join(' · '):isQuestion?[x.volume,x.newsTitle].filter(Boolean).join(' · '):isDrill?[x.volume,x.title,x.focus].filter(Boolean).join(' · '):[x.volume,x.title,x.focus].filter(Boolean).join(' · ');
   $('#currentFlashQuestion').classList.toggle('digest-cloze-question',isDigest);$('#currentFlashQuestion').onclick=isDigest?toggleDigestSlot:null;$('#currentFlashQuestion').onkeydown=isDigest?toggleDigestSlotByKeyboard:null;if(isDigest)$('#currentFlashQuestion').innerHTML=renderDigestCloze(x,false);else $('#currentFlashQuestion').innerHTML=highlightStudyText(isQuestion?currentCleanText(x.question):isDrill?x.drillQuestion:x.title,'current');
   $('#currentFlashOptions').innerHTML=isExamTrap?'<button type="button" class="judgment-choice" data-judgment="true">√ 正确</button><button type="button" class="judgment-choice" data-judgment="false">× 错误</button>':isQuestion?(x.options||[]).map(option=>`<p>${highlightStudyText(currentCleanText(option),'current')}</p>`).join(''):'';
@@ -674,7 +696,7 @@ function renderCurrentFlash(){
   $('#currentFlashMemory').textContent=isDigest?'': '先看主体、范围、程度词和对应关系，再判断选项；无需逐句背诵。';
   $('#currentFlashMemory').parentElement.classList.toggle('hidden',isExamTrap);
   $('#currentFlashTrap').textContent=isExamTrap?(x.drillIsCorrect?'原句无误，别见到熟悉表述就判错。':`${x.drillSwap} ≠ ${x.drillTerm}`):isDrill?(x.drillIsCorrect?'本题保留原文，用来防止“见到熟悉表述就一律判错”。':`排坑点：${x.drillSwap} ≠ ${x.drillTerm}`):'做完题再看解析，只记录导致失分的那个陷阱。';
-  $('#currentFlashTopic').textContent=`${currentFlashVolume} · ${isQuestion?'资料题目':isDigest?studyLabel:isDrill?'判断训练':currentFlashMode==='review'?'错题回练':'学习'}`;
+  $('#currentFlashTopic').textContent=`${currentFlashVolume} · ${isQuestion?'资料题目':isDigest?studyLabel:isDrill&&isExamTrap&&currentFlashMode==='review'?'今日错题复习':isDrill?'判断训练':currentFlashMode==='review'?'错题回练':'学习'}`;
   const priorChoice=saved.examTrapChoices?.[x.id];
   $('#currentFlashProgress').textContent=`${currentFlashIndex+1} / ${currentFlashDeck.length}`;$('#currentFlashPrev').disabled=currentFlashIndex===0;$('#currentFlashNext').disabled=isExamTrap?typeof priorChoice!=='boolean':currentFlashIndex===currentFlashDeck.length-1;$('#currentFlashNext').textContent=isExamTrap&&currentFlashIndex===currentFlashDeck.length-1?'完成本组 →':'下一张 →';
   updateStarButton($('#currentFlashStar'),`current:${x.id}`);
@@ -693,6 +715,12 @@ function showExamTrapAnswer(choice){
 function chooseExamTrapAnswer(choice){
   const x=currentFlashDeck[currentFlashIndex];if(!x||currentContentKind!=='examTrap'||typeof saved.examTrapChoices?.[x.id]==='boolean')return;
   saved.examTrapChoices=saved.examTrapChoices||{};saved.examTrapChoices[x.id]=choice;saved.currentKnown=saved.currentKnown||{};saved.currentKnown[x.id]=true;
+  saved.examTrapReview=saved.examTrapReview||{};
+  const old=saved.examTrapReview[x.id],correct=choice===x.drillIsCorrect;
+  if(!correct||old){
+    const stage=correct?Math.min((old?.stage||0)+1,EXAM_TRAP_REVIEW_INTERVALS.length-1):0;
+    saved.examTrapReview[x.id]={stage,next:currentDateKey(EXAM_TRAP_REVIEW_INTERVALS[stage]),last:currentDateKey(),reviews:(old?.reviews||0)+1};
+  }
   localStorage.setItem('zhizhengStats',JSON.stringify(saved));showExamTrapAnswer(choice)
 }
 function digestDisplayText(value){return currentCleanText(value).replace(/^\s*\d{1,3}\s*[.．、](?!\s*\d)\s*/,'')}
@@ -749,8 +777,8 @@ function startCurrentDrills(volume){
 function startMajorTopic(volume=null){
   ensureCurrentReviewData();currentFlashReturn='majorTopic';$('#currentFlashBack').textContent='← 返回重大专题';$('#currentFlashEyebrow').textContent='MAJOR CURRENT AFFAIRS';currentContentKind='majorDigest';currentFlashMode='new';currentFlashVolume=volume||'全部重大专题';$('#currentFlashOptions').classList.add('hidden');const pool=MAJOR_TOPIC_CARDS.filter(card=>!volume||card.volume===volume),fresh=pool.filter(card=>!saved.currentKnown[card.id]);currentFlashDeck=fresh.length?fresh:pool;currentFlashIndex=0;if(!currentFlashDeck.length)return;renderCurrentFlash();show('currentFlash')
 }
-function startExamTrap(groupId=null){
-  ensureCurrentReviewData();currentFlashReturn='examTrap';$('#currentFlashBack').textContent='← 返回卷子排坑';$('#currentFlashEyebrow').textContent='EXAM TRAP CHECKLIST';currentContentKind='examTrap';currentFlashMode='drill';const group=EXAM_TRAP_GROUPS.find(item=>item.id===groupId);currentFlashVolume=group?.name||'全部卷子排坑';$('#currentFlashOptions').classList.add('hidden');const pool=EXAM_TRAP_CARDS.filter(card=>!group||card.groupId===group.id),fresh=pool.filter(card=>!saved.currentKnown[card.id]);currentFlashDeck=fresh.length?fresh:pool;currentFlashIndex=0;if(!currentFlashDeck.length)return;renderCurrentFlash();show('currentFlash')
+function startExamTrap(groupId=null,requestedMode='auto'){
+  ensureCurrentReviewData();ensureExamTrapReviewData();currentFlashReturn='examTrap';$('#currentFlashBack').textContent='← 返回卷子排坑';$('#currentFlashEyebrow').textContent='EXAM TRAP CHECKLIST';currentContentKind='examTrap';const group=EXAM_TRAP_GROUPS.find(item=>item.id===groupId);currentFlashVolume=group?.name||'全部卷子排坑';$('#currentFlashOptions').classList.add('hidden');const pool=EXAM_TRAP_CARDS.filter(card=>!group||card.groupId===group.id),due=examTrapDue(pool),fresh=pool.filter(card=>!saved.currentKnown[card.id]);currentFlashMode=requestedMode==='review'||(requestedMode==='auto'&&due.length)?'review':'drill';currentFlashDeck=currentFlashMode==='review'?due:(fresh.length?fresh:pool);currentFlashIndex=0;if(!currentFlashDeck.length)return;for(const card of currentFlashDeck)delete saved.examTrapChoices[card.id];localStorage.setItem('zhizhengStats',JSON.stringify(saved));renderCurrentFlash();show('currentFlash')
 }
 function startCurrentTrainingReview(){
   ensureCurrentReviewData();const today=currentDateKey(),questions=CURRENT_AFFAIRS_QUESTIONS.map(x=>({...x,reviewKind:'question'})),drills=currentDrillPool(CURRENT_AFFAIRS_CARDS).map(x=>({...x,reviewKind:'drill'})),rank=x=>saved.currentReview[x.id]?.rating==='again'?0:saved.currentReview[x.id]?.rating==='fuzzy'?1:2,due=[...questions,...drills].filter(x=>saved.currentReview[x.id]?.next<=today).sort((a,b)=>rank(a)-rank(b)||currentPriority(a)-currentPriority(b));
@@ -877,7 +905,7 @@ $('#knowledgePrev').onclick=()=>{if(knowledgePage>0){knowledgePage--;renderKnowl
 enhanceKnowledgeUI();$('#flashStart').onclick=()=>knowledgeFilter==='全部法律'?startFlash('new'):startFlash('section',knowledgeFilter);$('#knowledgeReview').onclick=()=>startFlash('review');$('#flashBack').onclick=()=>{renderKnowledge();show('knowledge')};$('#flashFlip').onclick=()=>$('#flashCard').classList.add('flipped');$('#flashFlipBack').onclick=()=>markFlash('known');$('#flashPrev').onclick=()=>{if(flashIndex>0){flashIndex--;renderFlash()}};$('#flashNext').onclick=()=>{if(flashIndex<flashDeck.length-1){flashIndex++;renderFlash()}};$('#flashKnown').onclick=()=>markFlash('known');$('#flashFuzzy').onclick=()=>markFlash('fuzzy');$('#flashAgain').onclick=()=>markFlash('again');
 $('#digestStar').onclick=()=>{const note=digestNote();if(note)toggleStar(note,$('#digestStar'))};$('#currentFlashStar').onclick=()=>{const note=currentNote();if(note)toggleStar(note,$('#currentFlashStar'))};$('#flashStar').onclick=()=>{const note=lawNote();if(note)toggleStar(note,$('#flashStar'))};$('#notebookEntry').onclick=openNotebook;$('#notebookBack').onclick=()=>{show(notebookReturn);const sprintSide=notebookReturn==='sprint'||(notebookReturn==='commonQuick'&&commonQuickGroup.startsWith('sprint'));const knowledgeSide=['knowledge','flash','commonDigest'].includes(notebookReturn)||(notebookReturn==='commonQuick'&&!sprintSide)||(notebookReturn==='currentFlash'&&currentFlashReturn==='commonDigest');$$('.subject-nav button').forEach(button=>button.classList.toggle('selected',button.dataset.main===(sprintSide?'sprint':knowledgeSide?'knowledge':'politics')))};$('#notebookClear').onclick=()=>{if(confirm('确定清空全部标星笔记吗？')){saved.starred={};saveStarred();renderNotebook()}};
 const currentFlashFuzzy=document.createElement('button');currentFlashFuzzy.id='currentFlashFuzzy';currentFlashFuzzy.textContent='有点模糊';$('#currentFlashKnown').before(currentFlashFuzzy);
-$('#currentAll').onclick=openCurrentOverview;$('#currentDigestAll').onclick=()=>startCurrentDrills();$('#majorTopicAll').onclick=()=>startMajorTopic();$('#majorDigestAll').onclick=()=>startMajorTopic();$('#examTrapAll').onclick=()=>startExamTrap();$('#currentFlashBack').onclick=()=>{if(currentFlashReturn==='commonDigest'){openCommonDigest()}else if(currentFlashReturn==='majorTopic'){renderMajorTopics();show('majorTopic')}else if(currentFlashReturn==='examTrap'){renderExamTraps();show('examTrap')}else{renderCurrent();show('current')}};$('#currentFlashFlip').onclick=revealCurrentFlash;$('#currentFlashPrev').onclick=()=>{if(currentFlashIndex>0){currentFlashIndex--;renderCurrentFlash()}};$('#currentFlashNext').onclick=()=>{if(currentFlashIndex<currentFlashDeck.length-1){currentFlashIndex++;renderCurrentFlash()}else if(currentContentKind==='examTrap'&&typeof saved.examTrapChoices?.[currentFlashDeck[currentFlashIndex]?.id]==='boolean'){renderExamTraps();show('examTrap')}};$('#currentFlashKnown').onclick=()=>markCurrentFlash('known');currentFlashFuzzy.onclick=()=>markCurrentFlash('fuzzy');$('#currentFlashAgain').onclick=()=>markCurrentFlash('again');
+$('#currentAll').onclick=openCurrentOverview;$('#currentDigestAll').onclick=()=>startCurrentDrills();$('#majorTopicAll').onclick=()=>startMajorTopic();$('#majorDigestAll').onclick=()=>startMajorTopic();$('#examTrapAll').onclick=()=>startExamTrap();$('#examTrapReview').onclick=()=>startExamTrap(null,'review');$('#currentFlashBack').onclick=()=>{if(currentFlashReturn==='commonDigest'){openCommonDigest()}else if(currentFlashReturn==='majorTopic'){renderMajorTopics();show('majorTopic')}else if(currentFlashReturn==='examTrap'){renderExamTraps();show('examTrap')}else{renderCurrent();show('current')}};$('#currentFlashFlip').onclick=revealCurrentFlash;$('#currentFlashPrev').onclick=()=>{if(currentFlashIndex>0){currentFlashIndex--;renderCurrentFlash()}};$('#currentFlashNext').onclick=()=>{if(currentFlashIndex<currentFlashDeck.length-1){currentFlashIndex++;renderCurrentFlash()}else if(currentContentKind==='examTrap'&&typeof saved.examTrapChoices?.[currentFlashDeck[currentFlashIndex]?.id]==='boolean'){renderExamTraps();show('examTrap')}};$('#currentFlashKnown').onclick=()=>markCurrentFlash('known');currentFlashFuzzy.onclick=()=>markCurrentFlash('fuzzy');$('#currentFlashAgain').onclick=()=>markCurrentFlash('again');
 $('#currentFlashCard .flash-front').onclick=event=>{if(currentContentKind==='examTrap'&&event.target===event.currentTarget&&typeof saved.examTrapChoices?.[currentFlashDeck[currentFlashIndex]?.id]==='boolean')$('#currentFlashNext').click()};
 $('#currentFlashView .flash-stage').onclick=event=>{if(currentContentKind==='examTrap'&&(event.target===event.currentTarget||event.target===$('#currentFlashCard'))&&typeof saved.examTrapChoices?.[currentFlashDeck[currentFlashIndex]?.id]==='boolean')$('#currentFlashNext').click()};
 $('#currentNoteVolume').innerHTML=currentNoteVolumeOptions();$('#currentNotesFilter').innerHTML=currentNoteVolumeOptions(true);$('#currentNotesEntry').onclick=openCurrentNotes;$('#currentNotesBack').onclick=()=>{closeCurrentNoteImage();resetCurrentNoteEditor();renderCurrent();show('current')};$('#currentNoteSave').onclick=()=>saveCurrentNote().catch(error=>{console.error(error);alert('保存失败，请稍后再试。')});$('#currentNoteCancel').onclick=resetCurrentNoteEditor;$('#currentNoteImages').onchange=event=>{addCurrentNoteFiles(event.target.files);event.target.value=''};$('#currentNoteText').onpaste=event=>{const files=[...event.clipboardData.items].filter(item=>item.type.startsWith('image/')).map(item=>item.getAsFile()).filter(Boolean);if(files.length){event.preventDefault();addCurrentNoteFiles(files)}};$('#currentNotesFilter').onchange=renderCurrentNotes;$('#currentNoteLightboxClose').onclick=closeCurrentNoteImage;$('#currentNoteLightbox').onclick=event=>{if(event.target===$('#currentNoteLightbox'))closeCurrentNoteImage()};document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!$('#currentNoteLightbox').classList.contains('hidden'))closeCurrentNoteImage()});

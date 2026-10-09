@@ -18,12 +18,11 @@ function confusionSourceLabel(card){
   return [...new Set(labels)].slice(0,2).join(' · ');
 }
 function renderConfusion(){
-  const deck=confusionDeck(),card=deck[confusionIndex],group=CONFUSION_GROUPS.find(item=>item.id===confusionGroup);
+  const deck=confusionDeck(),card=deck[confusionIndex];
   if(!card)return;
   $('#confusionGroups').innerHTML=CONFUSION_GROUPS.map(item=>`<button type="button" data-confusion-group="${item.id}" class="${item.id===confusionGroup?'selected':''}">${item.name} <b>${CONFUSION_CARDS.filter(card=>card.group===item.id).length}</b></button>`).join('');
   $$('[data-confusion-group]').forEach(button=>button.onclick=()=>{confusionGroup=button.dataset.confusionGroup;confusionIndex=0;confusionRevealed=0;renderConfusion()});
   $('#confusionProgress').textContent=`${confusionIndex+1} / ${deck.length}`;
-  $('#confusionKind').textContent=group.name;
   $('#confusionTitle').textContent=card.title;
   $('#confusionCue').textContent=card.cue;
   $('#confusionRows').innerHTML=card.rows.map(([label,answer],index)=>`<div class="confusion-row ${index<confusionRevealed?'revealed':''}"><b>${escapeHTML(label)}</b><span class="confusion-answer" aria-hidden="${index>=confusionRevealed}">${escapeHTML(answer)}</span></div>`).join('');

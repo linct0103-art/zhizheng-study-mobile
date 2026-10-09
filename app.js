@@ -111,7 +111,7 @@ saved.starred=saved.starred||{};
 const reviewIntervals=[1,2,4,7,15,30];
 let sessionMode='new';
 let digestIndex=0,digestDeck=[],digestSessionMode='new';
-const views={commonDigest:$('#commonDigestView'),sprint:$('#sprintView'),commonQuick:$('#commonQuickView'),hub:$('#hubView'),politicsMenu:$('#politicsMenuView'),current:$('#currentView'),majorTopic:$('#majorTopicView'),examTrap:$('#examTrapView'),currentFlash:$('#currentFlashView'),currentNotes:$('#currentNotesView'),knowledge:$('#knowledgeView'),flash:$('#flashView'),home:$('#homeView'),digest:$('#digestView'),notebook:$('#notebookView'),quiz:$('#quizView'),result:$('#resultView')};
+const views={commonDigest:$('#commonDigestView'),sprint:$('#sprintView'),commonQuick:$('#commonQuickView'),hub:$('#hubView'),politicsMenu:$('#politicsMenuView'),current:$('#currentView'),majorTopic:$('#majorTopicView'),examTrap:$('#examTrapView'),currentFlash:$('#currentFlashView'),currentNotes:$('#currentNotesView'),knowledge:$('#knowledgeView'),flash:$('#flashView'),home:$('#homeView'),digest:$('#digestView'),confusion:$('#confusionView'),notebook:$('#notebookView'),quiz:$('#quizView'),result:$('#resultView')};
 function show(n){Object.values(views).forEach(v=>v.classList.remove('active'));views[n].classList.add('active');window.scrollTo({top:0,behavior:'smooth'})}
 
 const CURRENT_NOTES_DB='zhizhengCurrentAffairsNotes';

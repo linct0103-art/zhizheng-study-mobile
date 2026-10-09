@@ -161,3 +161,7 @@
   .digest-reader{height:auto;min-height:60dvh;overflow:visible!important;padding:12px 0!important}
   .digest-card{width:100%;min-height:55dvh;padding:20px!important}
 }
+
+@media(max-width:600px){
+  .confusion-view.active{height:calc(100dvh - 84px)!important;min-height:520px!important;display:grid!important;overflow:hidden!important}
+}

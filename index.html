@@ -80,8 +80,8 @@
       </div>
       <div class="learning-route" aria-label="学习路径">
         <button id="digestStep"><span>01</span><div><b>消化清单</b><small>先学框架与固定表述</small></div><i id="digestState">待学习</i></button>
-        <span>或</span>
         <button id="practiceStep"><span>02</span><div><b>排坑手册</b><small>辨析错误与易混项</small></div><i id="practiceState">全库混合</i></button>
+        <button id="confusionStep"><span>03</span><div><b>易混辨析</b><small>年份 · 程度 · 定位</small></div><i>对照记 →</i></button>
       </div>
       <div class="directory-title hidden"><b id="directoryModeTitle">政治理论全册混合</b></div>
       <div id="sectionPicker" class="section-picker hidden"></div>
@@ -102,6 +102,12 @@
   <div class="digest-reader"><article class="digest-card"><div class="digest-card-meta"><span id="digestKind">固定表述</span><small id="digestSource"></small></div><h2 id="digestPrompt"></h2><div class="digest-core"><small id="digestCoreLabel">应记原句</small><strong id="digestCore"></strong></div><p><b>易混提醒</b><span id="digestTip"></span></p></article></div>
   <div class="digest-actions"><button id="digestPrev" class="secondary-btn">← 上一条</button><span id="digestPageLabel">第 1 条</span><button id="digestStar" class="secondary-btn star-card">☆ 标星</button><button id="digestAgain" class="secondary-btn">还不熟</button><button id="digestNext" class="primary-btn">记住了，下一条 →</button><button id="digestComplete" class="primary-btn hidden">记住了，完成本组 →</button></div>
 </section>
+<section id="confusionView" class="view confusion-view">
+  <nav class="page-top confusion-top"><button id="confusionBack">← 返回理论</button><div><small>DIGEST CONTRAST</small><strong>消化清单 · 易混辨析</strong></div><span id="confusionProgress">1 / 1</span></nav>
+  <div id="confusionGroups" class="confusion-groups" aria-label="易混类型"></div>
+  <div class="confusion-stage"><article id="confusionCard" class="confusion-card" tabindex="0" role="button" aria-label="逐项显示答案"><div class="confusion-heading"><small id="confusionKind"></small><h2 id="confusionTitle"></h2><p id="confusionCue"></p></div><div id="confusionRows" class="confusion-rows"></div><p id="confusionTrap" class="confusion-trap"></p><div class="confusion-source"><span id="confusionSource"></span><a id="confusionSourceLink" target="_blank" rel="noopener noreferrer">核对原文 ↗</a><a id="confusionSourceLink2" target="_blank" rel="noopener noreferrer" class="hidden">另一原文 ↗</a></div></article></div>
+  <div class="confusion-controls"><button id="confusionPrev">← 上一组</button><span id="confusionHint">点卡片，逐项显示答案</span><button id="confusionNext">下一组 →</button></div>
+</section>
 <section id="notebookView" class="view notebook-view"><nav class="page-top"><button id="notebookBack">← 返回学习页</button><div><small>STARRED NOTEBOOK</small><strong>重点笔记本</strong></div><span id="notebookCount">0 条</span></nav><div class="notebook-heading"><div><h1>一次看完标星重点</h1><p>这里只做集中浏览，不计学习、答题或复习进度。</p></div><button id="notebookClear">清空全部</button></div><div id="notebookList" class="notebook-list"></div></section>
 <section id="quizView" class="view quiz-view">
   <nav class="quiz-nav"><button id="exitBtn">← 退出练习</button><div class="progress-wrap"><span id="progressText">1 / 8</span><div class="progress"><i id="progressBar"></i></div></div><span id="quizTopic"></span></nav>
@@ -117,6 +123,7 @@
 <script src="digest-bank.js?v=20260930-mobile-click-fix"></script>
 <script src="sprint-digest-supplements.js?v=20261006-full"></script>
 <script src="verified-targets.js?v=20260930-mobile-click-fix"></script>
-<script src="knowledge-data.js?v=20260930-mobile-click-fix"></script><script src="current-affairs-data.js?v=20261006-september-lower"></script><script src="sprint-matched-index.js?v=20261006-full"></script><script src="current-affairs-course-emphasis.js?v=20260930-mobile-click-fix"></script><script src="current-affairs-july-lower.js?v=20260923-digest-verified"></script><script src="current-affairs-august-upper.js?v=20260830-course-focus"></script><script src="current-affairs-digest-checklists.js?v=20261006-september-lower"></script><script src="major-topic-data.js?v=20260912-integrity"></script><script src="exam-trap-data.js?v=20261007-today-batch"></script><script src="app.js?v=20261007-exam-trap-review"></script>
+<script src="knowledge-data.js?v=20260930-mobile-click-fix"></script><script src="current-affairs-data.js?v=20261006-september-lower"></script><script src="sprint-matched-index.js?v=20261006-full"></script><script src="current-affairs-course-emphasis.js?v=20260930-mobile-click-fix"></script><script src="current-affairs-july-lower.js?v=20260923-digest-verified"></script><script src="current-affairs-august-upper.js?v=20260830-course-focus"></script><script src="current-affairs-digest-checklists.js?v=20261006-september-lower"></script><script src="major-topic-data.js?v=20260912-integrity"></script><script src="exam-trap-data.js?v=20261007-today-batch"></script><script src="app.js?v=20261009-confusion"></script>
 <script src="common-digest.js?v=20261006-sprint-full"></script>
+<script src="confusion-data.js?v=20261009"></script><script src="confusion.js?v=20261009"></script>
 </body></html>

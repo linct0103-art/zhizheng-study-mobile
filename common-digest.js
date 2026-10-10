@@ -69,6 +69,41 @@ function commonPool(groupId) {
   return COMMON_DIGEST.cards.filter(card => card.group === groupId);
 }
 
+function restoreSprintQuickProgress() {
+  if (saved.sprintQuickProgressMigrated) return;
+  saved.sprintQuickLearned = saved.sprintQuickLearned || {};
+  // The old version saved only the resume card. Reaching it required revealing every earlier card.
+  for (const groupId of ['sprint-theory', 'sprint-current', 'sprint-common', 'sprint']) {
+    const resumeId = saved.commonQuickPosition?.[groupId];
+    if (!resumeId) continue;
+    const deck = commonPool(groupId);
+    const resumeIndex = deck.findIndex(card => card.id === resumeId);
+    for (let index = 0; index < resumeIndex; index++) saved.sprintQuickLearned[deck[index].id] = true;
+  }
+  saved.sprintQuickProgressMigrated = true;
+  localStorage.setItem('zhizhengStats', JSON.stringify(saved));
+}
+
+function sprintLearnedCount(deck) {
+  const learned = saved.sprintQuickLearned || {};
+  return deck.filter(card => learned[card.id]).length;
+}
+
+function renderCommonQuickProgress() {
+  const position = `${commonQuickIndex + 1} / ${commonQuickDeck.length}`;
+  $('#commonQuickProgress').textContent = commonQuickGroup.startsWith('sprint')
+    ? `${position} · 已学 ${sprintLearnedCount(commonQuickDeck)}` : position;
+}
+
+function markSprintQuickLearned(card) {
+  if (!commonQuickGroup.startsWith('sprint')) return;
+  saved.sprintQuickLearned = saved.sprintQuickLearned || {};
+  if (saved.sprintQuickLearned[card.id]) return;
+  saved.sprintQuickLearned[card.id] = true;
+  localStorage.setItem('zhizhengStats', JSON.stringify(saved));
+  renderCommonQuickProgress();
+}
+
 function openCommonDigest() {
   $('#commonDigestSummary').textContent = `五类常识 · ${COMMON_DIGEST.cards.length} 张记忆卡`;
   $('#commonDigestGrid').innerHTML = COMMON_DIGEST.groups.map((group, index) => {
@@ -81,13 +116,18 @@ function openCommonDigest() {
 }
 
 function openSprintDigest() {
-  $('#sprintDigestSummary').textContent = `政治理论 ${commonPool('sprint-theory').length} 张 · 时政热点 ${commonPool('sprint-current').length} 张 · 常识判断 ${commonPool('sprint-common').length} 张`;
+  restoreSprintQuickProgress();
+  const all = commonPool('sprint');
+  $('#sprintDigestSummary').textContent = `已学 ${sprintLearnedCount(all)} / ${all.length} 张 · 本机自动保存`;
   $('#sprintDigestGrid').innerHTML = [
     ['sprint-theory', '01', '政治理论', '改革、法治与党的建设固定表述'],
     ['sprint-current', '02', '时政热点', '重要讲话、会议与政策文件'],
     ['sprint-common', '03', '常识判断', '文史、科技、经济、地理与法律'],
     ['sprint', '∞', '一体学习', '按照讲义顺序连续速记']
-  ].map(([id, number, title, description]) => `<article class="common-group-card"><small>${number}</small><div class="common-group-copy"><h2>${title}</h2><p>${description}</p><div class="common-group-stats"><span>${commonPool(id).length} 张记忆卡</span></div></div><div class="common-group-actions"><button data-sprint-practice="${id}">开始速记 →</button></div></article>`).join('');
+  ].map(([id, number, title, description]) => {
+    const deck = commonPool(id), learned = sprintLearnedCount(deck);
+    return `<article class="common-group-card"><small>${number}</small><div class="common-group-copy"><h2>${title}</h2><p>${description}</p><div class="common-group-stats"><span>已学 ${learned} / ${deck.length} 张</span></div><progress value="${learned}" max="${deck.length}" aria-label="${title}学习进度 ${learned}/${deck.length}"></progress></div><div class="common-group-actions"><button data-sprint-practice="${id}">${learned ? '继续速记' : '开始速记'} →</button></div></article>`;
+  }).join('');
   $$('[data-sprint-practice]').forEach(button => button.onclick = () => startCommonDigest(button.dataset.sprintPractice));
   show('sprint');
   $$('[data-main]').forEach(button => button.classList.toggle('selected', button.dataset.main === 'sprint'));
@@ -99,6 +139,7 @@ function returnFromQuick() {
 }
 
 function startCommonDigest(groupId) {
+  if (groupId.startsWith('sprint')) restoreSprintQuickProgress();
   const deck = commonPool(groupId);
   if (!deck.length) return;
   commonQuickDeck = deck;
@@ -132,7 +173,7 @@ function renderCommonQuick() {
   $('#commonQuickTitle').textContent = card.volume;
   $('#commonQuickBack').textContent = commonQuickGroup.startsWith('sprint') ? '← 冲刺班' : '← 常识目录';
   $('#commonQuickTopic').textContent = card.title;
-  $('#commonQuickProgress').textContent = `${commonQuickIndex + 1} / ${commonQuickDeck.length}`;
+  renderCommonQuickProgress();
   $('#commonQuickQuestion').innerHTML = renderCommonQuickQuestion(card, 0);
   renderCommonQuickMemory(card, false);
   $('#commonQuickHint').textContent = `点击显示第 1 空 · 共 ${card.digestTerms.length} 空`;
@@ -207,6 +248,7 @@ function advanceCommonQuick() {
       return;
     }
     const last = commonQuickIndex === commonQuickDeck.length - 1;
+    markSprintQuickLearned(card);
     renderCommonQuickMemory(card, true);
     $('#commonQuickHint').textContent = last ? '再点一下，完成本组' : '再点一下，下一张 →';
     $('#commonQuickCard').setAttribute('aria-label', last ? '完成本组' : '下一张');

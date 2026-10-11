@@ -1408,6 +1408,13 @@ footer{border:0;background:transparent;color:#898176;padding:0 18px}
 .theory-note-toolbar select{min-width:0;flex:1}
 .theory-note-toolbar button{height:36px;padding:0 11px;border:1px solid #d8b9b6;border-radius:10px;background:#fffdf9;color:var(--red);font:700 12px var(--sans);white-space:nowrap;cursor:pointer}
 .theory-note-toolbar #theoryNotesClose{flex:0 0 36px;width:36px;padding:0;border-color:#dfd3c5;color:#665d53;font-size:23px;line-height:1}
+.theory-category-manager{flex:0 1 auto;min-height:0;max-height:170px;margin-top:10px;padding:9px 10px;border:1px solid #e8dbcd;border-radius:11px;background:#f8f1e9;overflow-y:auto}
+.theory-category-heading,.theory-category-row{display:flex;align-items:center;gap:9px}
+.theory-category-heading{justify-content:space-between;padding-bottom:6px;color:#6f6156;font:700 12px var(--sans)}
+.theory-category-heading button,.theory-category-row button{border:0;background:none;color:var(--red);font:700 12px var(--sans);cursor:pointer}
+.theory-category-row{min-height:34px;padding:5px 0;border-top:1px solid #e8dbcd}
+.theory-category-row span{flex:1;min-width:0;color:#473e37;font:13px var(--sans);overflow-wrap:anywhere}
+.theory-category-row button:last-child{color:#8b7c70}
 .theory-category-form{display:flex;gap:7px;padding:9px 1px 0}
 .theory-category-form input{min-width:0;flex:1;height:36px;padding:0 10px;border:1px solid #dfd2c3;border-radius:10px;background:#fffdf9;color:var(--ink);font:13px var(--sans)}
 .theory-category-form button{height:36px;padding:0 10px;border:1px solid #dccfc0;border-radius:10px;background:#fffdf9;color:#6d6259;font:700 12px var(--sans);white-space:nowrap;cursor:pointer}

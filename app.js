@@ -109,20 +109,22 @@ const saved=JSON.parse(localStorage.getItem('zhizhengStats')||'{"done":0,"correc
 saved.records=saved.records||{};
 saved.starred=saved.starred||{};
 saved.theoryNotes=Array.isArray(saved.theoryNotes)?saved.theoryNotes:[];
-saved.theoryNoteCategories=[...new Set(['学习',...(Array.isArray(saved.theoryNoteCategories)?saved.theoryNoteCategories:[]),...saved.theoryNotes.map(note=>note.category)].filter(name=>typeof name==='string'&&name.trim()).map(name=>name.trim()))];
-let theoryNoteEditId=null,theoryNoteFilter='__all__';
+saved.theoryNoteCategories=[...new Set([...(Array.isArray(saved.theoryNoteCategories)?saved.theoryNoteCategories:[]),...saved.theoryNotes.map(note=>note.category)].filter(name=>typeof name==='string'&&name.trim()).map(name=>name.trim()))];
+if(!saved.theoryNoteCategories.length)saved.theoryNoteCategories=['学习'];
+let theoryNoteEditId=null,theoryNoteFilter='__all__',theoryCategoryEditName=null;
+function defaultTheoryNoteCategory(){return saved.theoryNoteCategories[0]||'学习'}
 function renderTheoryNoteCategories(selectedCategory){
-  const categorySelect=$('#theoryNoteCategory'),chosen=selectedCategory||categorySelect.value||'学习';
+  const categorySelect=$('#theoryNoteCategory'),chosen=selectedCategory||categorySelect.value||defaultTheoryNoteCategory();
   categorySelect.innerHTML=saved.theoryNoteCategories.map(name=>`<option value="${escapeHTML(name)}">${escapeHTML(name)}</option>`).join('');
-  categorySelect.value=saved.theoryNoteCategories.includes(chosen)?chosen:'学习';
+  categorySelect.value=saved.theoryNoteCategories.includes(chosen)?chosen:defaultTheoryNoteCategory();
   $('#theoryNotesFilter').innerHTML=`<option value="__all__">全部分类</option>${saved.theoryNoteCategories.map(name=>`<option value="${escapeHTML(name)}">${escapeHTML(name)}</option>`).join('')}`;
   $('#theoryNotesFilter').value=theoryNoteFilter;
 }
 function renderTheoryNotes(){
-  const notes=theoryNoteFilter==='__all__'?saved.theoryNotes:saved.theoryNotes.filter(note=>(note.category||'学习')===theoryNoteFilter);
+  const notes=theoryNoteFilter==='__all__'?saved.theoryNotes:saved.theoryNotes.filter(note=>(note.category||defaultTheoryNoteCategory())===theoryNoteFilter);
   $('#theoryNotesCount').textContent=saved.theoryNotes.length;
-  $('#theoryNotesList').innerHTML=notes.length?notes.map((note,index)=>`<li data-theory-note-id="${escapeHTML(note.id)}"><span class="theory-note-number">${index+1}.</span><p>${escapeHTML(note.text||'').replace(/\n/g,'<br>')}<small>${escapeHTML(note.category||'学习')}</small></p><div><button class="theory-note-drag" type="button" data-theory-note-drag aria-label="拖动第${index+1}条便签排序" title="按住拖动排序">☰</button><button type="button" data-theory-note-edit="${escapeHTML(note.id)}">修改</button><button type="button" data-theory-note-delete="${escapeHTML(note.id)}">删除</button></div></li>`).join(''):`<li class="theory-note-empty">${theoryNoteFilter==='__all__'?'暂无便签，在下方添加一条吧。':'这个分类还没有便签。'}</li>`;
-  $$('[data-theory-note-edit]').forEach(button=>button.onclick=()=>{const note=saved.theoryNotes.find(item=>item.id===button.dataset.theoryNoteEdit);if(!note)return;theoryNoteEditId=note.id;$('#theoryNoteText').value=note.text;$('#theoryNoteCategory').value=note.category||'学习';$('#theoryNoteSave').textContent='✓';$('#theoryNoteSave').setAttribute('aria-label','保存便签修改');$('#theoryNoteSave').title='保存便签修改';$('#theoryNoteCancel').classList.remove('hidden');$('#theoryNoteText').focus()});
+  $('#theoryNotesList').innerHTML=notes.length?notes.map((note,index)=>`<li data-theory-note-id="${escapeHTML(note.id)}"><span class="theory-note-number">${index+1}.</span><p>${escapeHTML(note.text||'').replace(/\n/g,'<br>')}<small>${escapeHTML(note.category||defaultTheoryNoteCategory())}</small></p><div><button class="theory-note-drag" type="button" data-theory-note-drag aria-label="拖动第${index+1}条便签排序" title="按住拖动排序">☰</button><button type="button" data-theory-note-edit="${escapeHTML(note.id)}">修改</button><button type="button" data-theory-note-delete="${escapeHTML(note.id)}">删除</button></div></li>`).join(''):`<li class="theory-note-empty">${theoryNoteFilter==='__all__'?'暂无便签，在下方添加一条吧。':'这个分类还没有便签。'}</li>`;
+  $$('[data-theory-note-edit]').forEach(button=>button.onclick=()=>{const note=saved.theoryNotes.find(item=>item.id===button.dataset.theoryNoteEdit);if(!note)return;theoryNoteEditId=note.id;$('#theoryNoteText').value=note.text;$('#theoryNoteCategory').value=note.category||defaultTheoryNoteCategory();$('#theoryNoteSave').textContent='✓';$('#theoryNoteSave').setAttribute('aria-label','保存便签修改');$('#theoryNoteSave').title='保存便签修改';$('#theoryNoteCancel').classList.remove('hidden');$('#theoryNoteText').focus()});
   $$('[data-theory-note-delete]').forEach(button=>button.onclick=()=>{if(!confirm('删除这条便签吗？'))return;saved.theoryNotes=saved.theoryNotes.filter(item=>item.id!==button.dataset.theoryNoteDelete);if(theoryNoteEditId===button.dataset.theoryNoteDelete)resetTheoryNoteEditor();localStorage.setItem('zhizhengStats',JSON.stringify(saved));renderTheoryNotes()});
 }
 function saveTheoryNoteOrder(){
@@ -158,10 +160,46 @@ $('#theoryNotesList').onpointercancel=()=>{if(!theoryNoteDrag)return;theoryNoteD
 $('#theoryNotesList').onkeydown=event=>{if(!event.target.matches('[data-theory-note-drag]')||!['ArrowUp','ArrowDown'].includes(event.key))return;event.preventDefault();const item=event.target.closest('li[data-theory-note-id]'),other=event.key==='ArrowUp'?item.previousElementSibling:item.nextElementSibling;if(!other?.hasAttribute('data-theory-note-id'))return;if(event.key==='ArrowUp')other.before(item);else other.after(item);const id=item.dataset.theoryNoteId;saveTheoryNoteOrder();$(`#theoryNotesList li[data-theory-note-id="${CSS.escape(id)}"] [data-theory-note-drag]`)?.focus()};
 function resetTheoryNoteEditor(){theoryNoteEditId=null;$('#theoryNoteText').value='';$('#theoryNoteSave').textContent='＋';$('#theoryNoteSave').setAttribute('aria-label','添加便签');$('#theoryNoteSave').title='添加便签';$('#theoryNoteCancel').classList.add('hidden')}
 function openTheoryNotes(){renderTheoryNotes();$('#theoryNotesDialog').classList.remove('hidden');(matchMedia('(max-width:600px)').matches?$('#theoryNotesClose'):$('#theoryNoteText')).focus()}
-function closeTheoryNotes(){$('#theoryNotesDialog').classList.add('hidden');$('#theoryCategoryForm').classList.add('hidden');$('#theoryNotesEntry').focus()}
+function closeTheoryNotes(){$('#theoryNotesDialog').classList.add('hidden');$('#theoryCategoryForm').classList.add('hidden');$('#theoryCategoryManager').classList.add('hidden');$('#theoryCategoryManage').setAttribute('aria-expanded','false');$('#theoryNotesEntry').focus()}
 function saveTheoryNote(event){event.preventDefault();const noteText=$('#theoryNoteText').value.trim();if(!noteText){$('#theoryNoteText').focus();return}const now=Date.now(),existing=saved.theoryNotes.find(note=>note.id===theoryNoteEditId),category=$('#theoryNoteCategory').value;if(existing){existing.text=noteText;existing.category=category;existing.updatedAt=now}else saved.theoryNotes.push({id:`theory-note-${now}-${Math.random().toString(36).slice(2,8)}`,text:noteText,category,createdAt:now,updatedAt:now});localStorage.setItem('zhizhengStats',JSON.stringify(saved));resetTheoryNoteEditor();renderTheoryNotes();$('#theoryNoteText').focus()}
-function addTheoryNoteCategory(event){event.preventDefault();const name=$('#theoryCategoryName').value.trim();if(!name){$('#theoryCategoryName').focus();return}const existing=saved.theoryNoteCategories.find(item=>item.localeCompare(name,'zh-CN',{sensitivity:'base'})===0);const selected=existing||name;if(!existing){saved.theoryNoteCategories.push(name);localStorage.setItem('zhizhengStats',JSON.stringify(saved))}theoryNoteFilter=selected;renderTheoryNoteCategories(selected);renderTheoryNotes();$('#theoryCategoryForm').classList.add('hidden');$('#theoryNoteText').focus()}
-$('#theoryNotesEntry').onclick=openTheoryNotes;$('#theoryNotesClose').onclick=closeTheoryNotes;$('#theoryNoteCancel').onclick=resetTheoryNoteEditor;$('#theoryNotesForm').onsubmit=saveTheoryNote;$('#theoryNotesFilter').onchange=event=>{theoryNoteFilter=event.target.value;$('#theoryNoteCategory').value=theoryNoteFilter==='__all__'?$('#theoryNoteCategory').value:theoryNoteFilter;renderTheoryNotes()};$('#theoryCategoryAdd').onclick=()=>{$('#theoryCategoryForm').classList.remove('hidden');$('#theoryCategoryName').focus()};$('#theoryCategoryCancel').onclick=()=>$('#theoryCategoryForm').classList.add('hidden');$('#theoryCategoryForm').onsubmit=addTheoryNoteCategory;$('#theoryNotesDialog').onclick=event=>{if(event.target===$('#theoryNotesDialog'))closeTheoryNotes()};$('#theoryNoteText').onkeydown=event=>{if((event.ctrlKey||event.metaKey)&&event.key==='Enter'){$('#theoryNotesForm').requestSubmit()}};document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!$('#theoryNotesDialog').classList.contains('hidden'))closeTheoryNotes()});renderTheoryNoteCategories();renderTheoryNotes();
+function showTheoryCategoryEditor(name=null){theoryCategoryEditName=name;$('#theoryCategoryName').value=name||'';$('#theoryCategorySave').textContent=name?'保存修改':'保存分类';$('#theoryCategoryForm').classList.remove('hidden');$('#theoryCategoryName').focus();$('#theoryCategoryName').select()}
+function renderTheoryCategoryManager(){
+  $('#theoryCategoryList').innerHTML=saved.theoryNoteCategories.map(name=>`<div class="theory-category-row"><span>${escapeHTML(name)}</span><button type="button" data-theory-category-edit="${escapeHTML(name)}">修改</button><button type="button" data-theory-category-delete="${escapeHTML(name)}">删除</button></div>`).join('');
+  $$('[data-theory-category-edit]').forEach(button=>button.onclick=()=>showTheoryCategoryEditor(button.dataset.theoryCategoryEdit));
+  $$('[data-theory-category-delete]').forEach(button=>button.onclick=()=>deleteTheoryNoteCategory(button.dataset.theoryCategoryDelete));
+}
+function saveTheoryNoteCategory(event){
+  event.preventDefault();
+  const name=$('#theoryCategoryName').value.trim(),old=theoryCategoryEditName;
+  if(!name){$('#theoryCategoryName').focus();return}
+  if(saved.theoryNoteCategories.some(item=>item!==old&&item.localeCompare(name,'zh-CN',{sensitivity:'base'})===0)){alert('这个分类已存在。');return}
+  const chosen=$('#theoryNoteCategory').value,oldDefault=defaultTheoryNoteCategory();
+  if(old){
+    saved.theoryNoteCategories[saved.theoryNoteCategories.indexOf(old)]=name;
+    saved.theoryNotes.forEach(note=>{if((note.category||oldDefault)===old)note.category=name});
+    if(theoryNoteFilter===old)theoryNoteFilter=name;
+  }else saved.theoryNoteCategories.push(name);
+  localStorage.setItem('zhizhengStats',JSON.stringify(saved));
+  renderTheoryNoteCategories(old?chosen===old?name:chosen:name);
+  renderTheoryNotes();renderTheoryCategoryManager();
+  if(!old){$('#theoryCategoryManager').classList.add('hidden');$('#theoryCategoryManage').setAttribute('aria-expanded','false')}
+  theoryCategoryEditName=null;$('#theoryCategoryForm').classList.add('hidden');
+}
+function deleteTheoryNoteCategory(name){
+  const oldDefault=defaultTheoryNoteCategory(),count=saved.theoryNotes.filter(note=>(note.category||oldDefault)===name).length;
+  const fallback=saved.theoryNoteCategories.find(item=>item!==name)||(name==='未分类'?'学习':'未分类');
+  const message=count?`删除“${name}”？其中 ${count} 条便签将移到“${fallback}”。`:`删除分类“${name}”？${saved.theoryNoteCategories.length===1?`将自动建立“${fallback}”分类。`:''}`;
+  if(!confirm(message))return;
+  saved.theoryNoteCategories=saved.theoryNoteCategories.filter(item=>item!==name);
+  if(!saved.theoryNoteCategories.length)saved.theoryNoteCategories=[fallback];
+  saved.theoryNotes.forEach(note=>{if((note.category||oldDefault)===name)note.category=fallback});
+  if(theoryNoteFilter===name)theoryNoteFilter='__all__';
+  const selected=$('#theoryNoteCategory').value===name?fallback:$('#theoryNoteCategory').value;
+  localStorage.setItem('zhizhengStats',JSON.stringify(saved));
+  renderTheoryNoteCategories(selected);renderTheoryNotes();renderTheoryCategoryManager();
+  if(theoryCategoryEditName===name){theoryCategoryEditName=null;$('#theoryCategoryForm').classList.add('hidden')}
+}
+$('#theoryNotesEntry').onclick=openTheoryNotes;$('#theoryNotesClose').onclick=closeTheoryNotes;$('#theoryNoteCancel').onclick=resetTheoryNoteEditor;$('#theoryNotesForm').onsubmit=saveTheoryNote;$('#theoryNotesFilter').onchange=event=>{theoryNoteFilter=event.target.value;$('#theoryNoteCategory').value=theoryNoteFilter==='__all__'?$('#theoryNoteCategory').value:theoryNoteFilter;renderTheoryNotes()};$('#theoryCategoryManage').onclick=()=>{const show=$('#theoryCategoryManager').classList.toggle('hidden')===false;$('#theoryCategoryManage').setAttribute('aria-expanded',String(show));$('#theoryCategoryForm').classList.add('hidden');if(show)renderTheoryCategoryManager()};$('#theoryCategoryAdd').onclick=()=>showTheoryCategoryEditor();$('#theoryCategoryCancel').onclick=()=>{theoryCategoryEditName=null;$('#theoryCategoryForm').classList.add('hidden')};$('#theoryCategoryForm').onsubmit=saveTheoryNoteCategory;$('#theoryNotesDialog').onclick=event=>{if(event.target===$('#theoryNotesDialog'))closeTheoryNotes()};$('#theoryNoteText').onkeydown=event=>{if((event.ctrlKey||event.metaKey)&&event.key==='Enter'){$('#theoryNotesForm').requestSubmit()}};document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!$('#theoryNotesDialog').classList.contains('hidden'))closeTheoryNotes()});renderTheoryNoteCategories();renderTheoryNotes();
 const reviewIntervals=[1,2,4,7,15,30];
 let sessionMode='new';
 let digestIndex=0,digestDeck=[],digestSessionMode='new';

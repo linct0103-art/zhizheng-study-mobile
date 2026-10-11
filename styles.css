@@ -1399,24 +1399,26 @@ footer{border:0;background:transparent;color:#898176;padding:0 18px}
 .theory-notes-entry{position:absolute;top:5px;right:8px;z-index:2;display:flex;align-items:center;gap:6px;min-height:32px;padding:5px 10px;border:1px solid #d7c9b8;border-radius:11px;background:#fffaf4;color:#a52f33;font:700 12px var(--sans);cursor:pointer;box-shadow:0 5px 15px #47342812}
 .theory-notes-entry:hover{border-color:#a52f33;background:#fff6f2}
 .theory-notes-entry b{display:grid;place-items:center;min-width:18px;height:18px;padding:0 4px;border-radius:9px;background:#a52f3315;font-size:10px}
-.theory-notes-overlay{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:16px;background:#27211ccb;backdrop-filter:blur(4px)}
-.theory-notes-panel{width:min(550px,100%);height:min(620px,calc(100dvh - 32px));min-height:340px;display:grid;grid-template-rows:auto minmax(80px,1fr) auto;gap:0;padding:18px;border:1px solid #b5d7e6;border-radius:20px;background:#eaf4f8;box-shadow:0 25px 80px #140e0d50;overflow:hidden}
-.theory-notes-panel>header{display:flex;align-items:start;justify-content:space-between;gap:16px;padding:6px 4px 14px;border-bottom:1px solid #c4dbe6}
-.theory-notes-panel>header small{color:#64859b;font:700 11px var(--sans)}
-.theory-notes-panel h2{margin:3px 0 0;color:#215b80;font:700 22px var(--serif)}
-.theory-notes-panel>header button{width:34px;height:34px;border:1px solid #c3d7e1;border-radius:10px;background:#fff;color:#526d7d;font-size:24px;line-height:1;cursor:pointer}
-.theory-notes-list{list-style:none;margin:0;padding:14px 4px;display:flex;flex-direction:column;gap:8px;min-height:0;overflow-y:auto}
-.theory-notes-list li:not(.theory-note-empty){display:grid;grid-template-columns:28px minmax(0,1fr) auto;align-items:start;gap:9px;padding:11px;border:1px solid #d0e0e8;border-radius:12px;background:#ffffffb8}
-.theory-note-number{color:#347198;font:700 15px var(--serif)}
+.theory-notes-overlay{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:18px;background:#25201bbb;backdrop-filter:blur(4px)}
+.theory-notes-panel{width:min(560px,100%);height:min(550px,calc(100dvh - 44px));min-height:0;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:0;padding:22px;border:1px solid #ded2c2;border-radius:22px;background:#fffaf3;box-shadow:0 25px 80px #140e0d45;overflow:hidden}
+.theory-notes-panel:has(.theory-note-empty){height:min(330px,calc(100dvh - 44px))}
+.theory-notes-panel>header{display:flex;align-items:center;justify-content:space-between;gap:16px;height:auto;min-height:0;padding:0 0 14px;border:0;border-bottom:1px solid #e4d9ca;border-radius:0;background:transparent;box-shadow:none}
+.theory-notes-panel>header small{color:var(--red);font:700 11px var(--sans)}
+.theory-notes-panel h2{margin:3px 0 0;color:var(--ink);font:700 23px var(--serif)}
+.theory-notes-panel>header button{width:34px;height:34px;border:1px solid #dfd3c5;border-radius:10px;background:#fffdf9;color:#665d53;font-size:24px;line-height:1;cursor:pointer}
+.theory-notes-list{list-style:none;margin:0;padding:14px 1px;display:flex;flex-direction:column;gap:9px;min-height:0;overflow-y:auto}
+.theory-notes-list li:not(.theory-note-empty){display:grid;grid-template-columns:28px minmax(0,1fr) auto;align-items:start;gap:9px;padding:12px 13px;border:1px solid #e9ddcf;border-radius:12px;background:#fffdf9}
+.theory-note-number{color:var(--red);font:700 15px var(--serif)}
 .theory-notes-list p{margin:0;color:#302c28;font:15px/1.7 var(--serif);overflow-wrap:anywhere}
 .theory-notes-list li>div{display:flex;gap:7px}
 .theory-notes-list li button{border:0;background:none;color:#8a7669;font:600 12px var(--sans);cursor:pointer}
-.theory-notes-list li button:hover{color:#215b80}
-.theory-note-empty{padding:8px 4px;color:#8b92a2;font-size:13px}
-#theoryNotesForm{display:flex;align-items:end;gap:8px;padding:12px 3px 1px;border-top:1px solid #c4dbe6}
+.theory-notes-list li button:hover{color:var(--red)}
+.theory-note-empty{margin:auto;padding:20px 4px;color:#8d8175;font-size:14px;text-align:center}
+#theoryNotesForm{display:flex;align-items:end;gap:8px;padding:14px 1px 0;border-top:1px solid #e4d9ca}
 #theoryNotesForm label{color:#6d6259;font:700 13px var(--sans)}
-#theoryNoteText{width:100%;height:54px;min-height:54px;resize:none;padding:12px 13px;border:1px solid #cbbdd4;border-radius:12px;background:white;color:#302c28;font:15px/1.5 var(--sans)}
-#theoryNoteText:focus{outline:2px solid #7eb7d360;outline-offset:1px}
-#theoryNotesForm button{flex:0 0 auto;height:54px;padding:7px 12px;border:1px solid #c9d4df;border-radius:12px;background:#fff;color:#587080;font:700 13px var(--sans);cursor:pointer}
-#theoryNotesForm #theoryNoteSave{width:48px;padding:0;border-color:#ffc342;background:#ffc342;color:#473700;font-size:26px}
-@media(max-width:600px){.theory-notes-entry{top:0;right:2px;min-height:36px}.theory-notes-panel{width:100%;height:calc(100dvh - 20px);min-height:0;padding:15px;border-radius:18px}.theory-notes-list li:not(.theory-note-empty){grid-template-columns:24px minmax(0,1fr);gap:6px}.theory-notes-list li>div{grid-column:2;justify-content:flex-end}.theory-notes-list p{font-size:14px}}
+#theoryNoteText{width:100%;height:50px;min-height:50px;resize:none;padding:11px 13px;border:1px solid #dfd2c3;border-radius:11px;background:#fffdf9;color:var(--ink);font:14px/1.5 var(--sans)}
+#theoryNoteText:focus{outline:2px solid #a62b2b33;outline-offset:1px}
+#theoryNotesForm button{flex:0 0 auto;height:50px;padding:7px 12px;border:1px solid #dccfc0;border-radius:11px;background:#fffdf9;color:#6d6259;font:700 13px var(--sans);cursor:pointer}
+#theoryNotesForm #theoryNoteSave{width:48px;padding:0;border-color:var(--red);background:var(--red);color:#fff;font-size:25px}
+#theoryNotesForm #theoryNoteSave:hover{background:var(--red2)}
+@media(max-width:600px){.theory-notes-entry{top:0;right:2px;min-height:36px}.theory-notes-overlay{padding:14px}.theory-notes-panel{width:100%;height:min(490px,calc(100dvh - 28px));padding:18px;border-radius:19px}.theory-notes-panel:has(.theory-note-empty){height:min(310px,calc(100dvh - 28px))}.theory-notes-list li:not(.theory-note-empty){grid-template-columns:24px minmax(0,1fr);gap:6px}.theory-notes-list li>div{grid-column:2;justify-content:flex-end}.theory-notes-list p{font-size:14px}}

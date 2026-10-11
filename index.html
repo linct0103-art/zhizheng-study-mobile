@@ -5,7 +5,7 @@
   <meta name="theme-color" content="#f5f1e8"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><title>知政 · 政治理论排坑</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@600;700;900&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20261011-note-sort">
+  <link rel="stylesheet" href="styles.css?v=20261011-note-compact">
   <link rel="stylesheet" href="common-digest.css?v=20261006-sprint-full">
   <link rel="stylesheet" href="mobile.css?v=20261011-theory-notes">
   <link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -116,10 +116,9 @@
 </section>
 <section id="resultView" class="view result-view"><div class="result-mark"><span>本次掌握度</span><strong id="resultScore">0</strong><small>分</small></div><p class="eyebrow">本轮学习完成</p><h1 id="resultTitle"></h1><p id="resultDesc" class="lead"></p><div id="resultBreakdown" class="result-breakdown"></div><div class="result-actions"><button id="continueBtn" class="primary-btn hidden">继续今日新学习 →</button><button id="retryBtn" class="primary-btn">只练本次错题</button><button id="homeBtn" class="secondary-btn">返回首页</button></div></section>
 </main>
-<div id="theoryNotesDialog" class="theory-notes-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="theoryNotesTitle">
+<div id="theoryNotesDialog" class="theory-notes-overlay hidden" role="dialog" aria-modal="true" aria-label="政治理论便签">
   <section class="theory-notes-panel">
-    <header><div><small>政治理论</small><h2 id="theoryNotesTitle">便签</h2></div><button id="theoryNotesClose" type="button" aria-label="关闭便签">×</button></header>
-    <div class="theory-note-toolbar"><label for="theoryNotesFilter">分类</label><select id="theoryNotesFilter" aria-label="筛选便签分类"></select><button id="theoryCategoryAdd" type="button">＋ 新增分类</button></div>
+    <div class="theory-note-toolbar"><label for="theoryNotesFilter">分类</label><select id="theoryNotesFilter" aria-label="筛选便签分类"></select><button id="theoryCategoryAdd" type="button">＋ 新增分类</button><button id="theoryNotesClose" type="button" aria-label="关闭便签">×</button></div>
     <form id="theoryCategoryForm" class="theory-category-form hidden"><label class="sr-only" for="theoryCategoryName">分类名称</label><input id="theoryCategoryName" type="text" maxlength="20" placeholder="输入分类名称"><button type="submit">保存分类</button><button id="theoryCategoryCancel" type="button">取消</button></form>
     <ol id="theoryNotesList" class="theory-notes-list"></ol>
     <form id="theoryNotesForm"><label class="sr-only" for="theoryNoteCategory">便签分类</label><select id="theoryNoteCategory" aria-label="便签分类"></select><label class="sr-only" for="theoryNoteText">添加便签</label><textarea id="theoryNoteText" rows="2" maxlength="1200" placeholder="添加一条注意事项……"></textarea><button id="theoryNoteCancel" class="hidden" type="button">取消</button><button id="theoryNoteSave" type="submit" aria-label="添加便签" title="添加便签">＋</button></form>

@@ -1400,17 +1400,14 @@ footer{border:0;background:transparent;color:#898176;padding:0 18px}
 .theory-notes-entry:hover{border-color:#a52f33;background:#fff6f2}
 .theory-notes-entry b{display:grid;place-items:center;min-width:18px;height:18px;padding:0 4px;border-radius:9px;background:#a52f3315;font-size:10px}
 .theory-notes-overlay{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:18px;background:#25201bbb;backdrop-filter:blur(4px)}
-.theory-notes-panel{width:min(560px,100%);height:min(550px,calc(100dvh - 44px));min-height:0;display:flex;flex-direction:column;padding:22px;border:1px solid #ded2c2;border-radius:22px;background:#fffaf3;box-shadow:0 25px 80px #140e0d45;overflow:hidden}
-.theory-notes-panel:has(.theory-note-empty){height:min(330px,calc(100dvh - 44px))}
-.theory-notes-panel>header{display:flex;align-items:center;justify-content:space-between;gap:16px;height:auto;min-height:0;padding:0 0 14px;border:0;border-bottom:1px solid #e4d9ca;border-radius:0;background:transparent;box-shadow:none}
-.theory-notes-panel>header small{color:var(--red);font:700 11px var(--sans)}
-.theory-notes-panel h2{margin:3px 0 0;color:var(--ink);font:700 23px var(--serif)}
-.theory-notes-panel>header button{width:34px;height:34px;border:1px solid #dfd3c5;border-radius:10px;background:#fffdf9;color:#665d53;font-size:24px;line-height:1;cursor:pointer}
-.theory-note-toolbar{display:flex;align-items:center;gap:9px;padding:12px 1px 0}
+.theory-notes-panel{width:min(560px,100%);height:auto;max-height:min(550px,calc(100dvh - 44px));min-height:0;display:flex;flex-direction:column;padding:22px;border:1px solid #ded2c2;border-radius:22px;background:#fffaf3;box-shadow:0 25px 80px #140e0d45;overflow:hidden}
+.theory-notes-panel:has(.theory-note-empty){height:min(275px,calc(100dvh - 44px))}
+.theory-note-toolbar{display:flex;align-items:center;gap:7px;padding:0 1px 12px;border-bottom:1px solid #e4d9ca}
 .theory-note-toolbar label{color:#7b6e62;font:700 12px var(--sans)}
 .theory-note-toolbar select,#theoryNoteCategory{height:36px;padding:0 10px;border:1px solid #dfd2c3;border-radius:10px;background:#fffdf9;color:#514940;font:600 12px var(--sans)}
 .theory-note-toolbar select{min-width:0;flex:1}
 .theory-note-toolbar button{height:36px;padding:0 11px;border:1px solid #d8b9b6;border-radius:10px;background:#fffdf9;color:var(--red);font:700 12px var(--sans);white-space:nowrap;cursor:pointer}
+.theory-note-toolbar #theoryNotesClose{flex:0 0 36px;width:36px;padding:0;border-color:#dfd3c5;color:#665d53;font-size:23px;line-height:1}
 .theory-category-form{display:flex;gap:7px;padding:9px 1px 0}
 .theory-category-form input{min-width:0;flex:1;height:36px;padding:0 10px;border:1px solid #dfd2c3;border-radius:10px;background:#fffdf9;color:var(--ink);font:13px var(--sans)}
 .theory-category-form button{height:36px;padding:0 10px;border:1px solid #dccfc0;border-radius:10px;background:#fffdf9;color:#6d6259;font:700 12px var(--sans);white-space:nowrap;cursor:pointer}
@@ -1436,4 +1433,4 @@ footer{border:0;background:transparent;color:#898176;padding:0 18px}
 #theoryNotesForm #theoryNoteCancel{order:4;height:32px;margin-left:auto}
 #theoryNotesForm #theoryNoteSave{order:3;width:48px;padding:0;border-color:var(--red);background:var(--red);color:#fff;font-size:25px}
 #theoryNotesForm #theoryNoteSave:hover{background:var(--red2)}
-@media(max-width:600px){.theory-notes-entry{top:0;right:2px;min-height:36px}.theory-notes-overlay{padding:14px}.theory-notes-panel{width:100%;height:min(490px,calc(100dvh - 28px));padding:18px;border-radius:19px}.theory-notes-panel:has(.theory-note-empty){height:min(310px,calc(100dvh - 28px))}.theory-notes-list li:not(.theory-note-empty){grid-template-columns:24px minmax(0,1fr);gap:6px}.theory-notes-list li>div{grid-column:2;justify-content:flex-end}.theory-notes-list p{font-size:14px}}
+@media(max-width:600px){.theory-notes-entry{top:0;right:2px;min-height:36px}.theory-notes-overlay{padding:14px}.theory-notes-panel{width:100%;height:auto;max-height:min(490px,calc(100dvh - 28px));padding:18px;border-radius:19px}.theory-notes-panel:has(.theory-note-empty){height:min(265px,calc(100dvh - 28px))}.theory-notes-list li:not(.theory-note-empty){grid-template-columns:24px minmax(0,1fr);gap:6px}.theory-notes-list li>div{grid-column:2;justify-content:flex-end}.theory-notes-list p{font-size:14px}}

@@ -121,10 +121,41 @@ function renderTheoryNoteCategories(selectedCategory){
 function renderTheoryNotes(){
   const notes=theoryNoteFilter==='__all__'?saved.theoryNotes:saved.theoryNotes.filter(note=>(note.category||'学习')===theoryNoteFilter);
   $('#theoryNotesCount').textContent=saved.theoryNotes.length;
-  $('#theoryNotesList').innerHTML=notes.length?notes.map((note,index)=>`<li><span class="theory-note-number">${index+1}.</span><p>${escapeHTML(note.text||'').replace(/\n/g,'<br>')}<small>${escapeHTML(note.category||'学习')}</small></p><div><button type="button" data-theory-note-edit="${escapeHTML(note.id)}">修改</button><button type="button" data-theory-note-delete="${escapeHTML(note.id)}">删除</button></div></li>`).join(''):`<li class="theory-note-empty">${theoryNoteFilter==='__all__'?'暂无便签，在下方添加一条吧。':'这个分类还没有便签。'}</li>`;
+  $('#theoryNotesList').innerHTML=notes.length?notes.map((note,index)=>`<li data-theory-note-id="${escapeHTML(note.id)}"><span class="theory-note-number">${index+1}.</span><p>${escapeHTML(note.text||'').replace(/\n/g,'<br>')}<small>${escapeHTML(note.category||'学习')}</small></p><div><button class="theory-note-drag" type="button" data-theory-note-drag aria-label="拖动第${index+1}条便签排序" title="按住拖动排序">☰</button><button type="button" data-theory-note-edit="${escapeHTML(note.id)}">修改</button><button type="button" data-theory-note-delete="${escapeHTML(note.id)}">删除</button></div></li>`).join(''):`<li class="theory-note-empty">${theoryNoteFilter==='__all__'?'暂无便签，在下方添加一条吧。':'这个分类还没有便签。'}</li>`;
   $$('[data-theory-note-edit]').forEach(button=>button.onclick=()=>{const note=saved.theoryNotes.find(item=>item.id===button.dataset.theoryNoteEdit);if(!note)return;theoryNoteEditId=note.id;$('#theoryNoteText').value=note.text;$('#theoryNoteCategory').value=note.category||'学习';$('#theoryNoteSave').textContent='✓';$('#theoryNoteSave').setAttribute('aria-label','保存便签修改');$('#theoryNoteSave').title='保存便签修改';$('#theoryNoteCancel').classList.remove('hidden');$('#theoryNoteText').focus()});
   $$('[data-theory-note-delete]').forEach(button=>button.onclick=()=>{if(!confirm('删除这条便签吗？'))return;saved.theoryNotes=saved.theoryNotes.filter(item=>item.id!==button.dataset.theoryNoteDelete);if(theoryNoteEditId===button.dataset.theoryNoteDelete)resetTheoryNoteEditor();localStorage.setItem('zhizhengStats',JSON.stringify(saved));renderTheoryNotes()});
 }
+function saveTheoryNoteOrder(){
+  const order=$$('#theoryNotesList li[data-theory-note-id]').map(item=>item.dataset.theoryNoteId),visible=new Set(order),byId=new Map(saved.theoryNotes.map(note=>[note.id,note]));
+  let next=0;
+  saved.theoryNotes=saved.theoryNotes.map(note=>visible.has(note.id)?byId.get(order[next++]):note);
+  localStorage.setItem('zhizhengStats',JSON.stringify(saved));
+  renderTheoryNotes();
+}
+let theoryNoteDrag=null;
+$('#theoryNotesList').onpointerdown=event=>{
+  const handle=event.target.closest('[data-theory-note-drag]');
+  if(!handle||(event.pointerType==='mouse'&&event.button!==0))return;
+  const item=handle.closest('li[data-theory-note-id]');
+  theoryNoteDrag={item,pointerId:event.pointerId,moved:false};
+  item.classList.add('dragging');
+  handle.setPointerCapture(event.pointerId);
+  event.preventDefault();
+};
+$('#theoryNotesList').onpointermove=event=>{
+  if(!theoryNoteDrag||event.pointerId!==theoryNoteDrag.pointerId)return;
+  const {item}=theoryNoteDrag,list=$('#theoryNotesList'),bounds=list.getBoundingClientRect();
+  if(event.clientY<bounds.top+28)list.scrollTop-=12;
+  else if(event.clientY>bounds.bottom-28)list.scrollTop+=12;
+  const target=document.elementFromPoint(event.clientX,event.clientY)?.closest('#theoryNotesList li[data-theory-note-id]');
+  if(!target||target===item)return;
+  const before=event.clientY<target.getBoundingClientRect().top+target.getBoundingClientRect().height/2;
+  if(before)target.before(item);else target.after(item);
+  theoryNoteDrag.moved=true;
+};
+$('#theoryNotesList').onpointerup=event=>{if(!theoryNoteDrag||event.pointerId!==theoryNoteDrag.pointerId)return;const moved=theoryNoteDrag.moved;theoryNoteDrag.item.classList.remove('dragging');theoryNoteDrag=null;if(moved)saveTheoryNoteOrder()};
+$('#theoryNotesList').onpointercancel=()=>{if(!theoryNoteDrag)return;theoryNoteDrag=null;renderTheoryNotes()};
+$('#theoryNotesList').onkeydown=event=>{if(!event.target.matches('[data-theory-note-drag]')||!['ArrowUp','ArrowDown'].includes(event.key))return;event.preventDefault();const item=event.target.closest('li[data-theory-note-id]'),other=event.key==='ArrowUp'?item.previousElementSibling:item.nextElementSibling;if(!other?.hasAttribute('data-theory-note-id'))return;if(event.key==='ArrowUp')other.before(item);else other.after(item);const id=item.dataset.theoryNoteId;saveTheoryNoteOrder();$(`#theoryNotesList li[data-theory-note-id="${CSS.escape(id)}"] [data-theory-note-drag]`)?.focus()};
 function resetTheoryNoteEditor(){theoryNoteEditId=null;$('#theoryNoteText').value='';$('#theoryNoteSave').textContent='＋';$('#theoryNoteSave').setAttribute('aria-label','添加便签');$('#theoryNoteSave').title='添加便签';$('#theoryNoteCancel').classList.add('hidden')}
 function openTheoryNotes(){renderTheoryNotes();$('#theoryNotesDialog').classList.remove('hidden');(matchMedia('(max-width:600px)').matches?$('#theoryNotesClose'):$('#theoryNoteText')).focus()}
 function closeTheoryNotes(){$('#theoryNotesDialog').classList.add('hidden');$('#theoryCategoryForm').classList.add('hidden');$('#theoryNotesEntry').focus()}

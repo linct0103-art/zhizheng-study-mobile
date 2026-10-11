@@ -115,7 +115,7 @@
   #flashView .flash-front,#flashView .flash-back{overflow-y:auto!important;padding:20px 18px!important}
   #flashView .flash-front h2{font-size:19px!important;line-height:1.4}
 
-  #homeView .workspace{height:auto!important;display:block!important}
+  #homeView .workspace{height:auto!important;display:block!important;padding-top:40px}
   #homeView .entry-card{overflow:visible!important;padding:16px!important}
   #homeView .daily-flow{grid-template-columns:1fr;gap:6px}
   #homeView .flow-arrow{display:none}

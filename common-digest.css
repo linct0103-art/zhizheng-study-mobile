@@ -91,7 +91,10 @@
 .common-memory-sources a:hover { color: var(--red); }
 .common-memory-sources a:focus-visible { outline: 2px solid var(--red); outline-offset: 3px; }
 .common-quick-footer { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px; font-size: 13px; }
+.common-quick-footer.has-star { grid-template-columns: auto auto minmax(0, 1fr) auto; }
 .common-quick-footer > button { justify-self: start; min-width: 102px; height: 36px; padding: 6px 15px; border: 1px solid var(--red); border-radius: 10px; background: var(--white); color: var(--red); font: 600 14px var(--sans); cursor: pointer; }
+.common-quick-footer > .icon-star { min-width: 40px; width: 40px; padding: 0; font-size: 22px; line-height: 1; }
+.common-quick-footer.has-star > p { text-align: center; }
 .common-quick-footer > button:hover:not(:disabled) { background: #a72e320c; }
 .common-quick-footer > button:disabled { border-color: var(--line); color: var(--muted); cursor: default; }
 .common-quick-footer > p { margin: 0; color: var(--red); }
@@ -104,6 +107,8 @@
   .common-quick-card { --quick-font-size: 16px; padding: 16px; border-radius: 18px; }
   .common-memory-sources > span:last-child { display: none; }
   .common-quick-footer { grid-template-columns: auto 1fr; gap: 10px; }
+  .common-quick-footer.has-star { grid-template-columns: auto auto minmax(0, 1fr); }
+  .common-quick-footer.has-star > p { text-align: right; font-size: 11px; }
   .common-quick-footer > p { text-align: right; }
   .common-quick-footer > span { display: none; }
 }

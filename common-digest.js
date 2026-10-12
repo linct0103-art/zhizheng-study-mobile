@@ -95,6 +95,21 @@ function renderCommonQuickProgress() {
     ? `${position} · 已学 ${sprintLearnedCount(commonQuickDeck)}` : position;
 }
 
+function sprintQuickNote() {
+  if (!commonQuickGroup.startsWith('sprint')) return null;
+  const card = commonQuickDeck[commonQuickIndex];
+  return card && { key: `sprint:${card.id}`, group: card.volume || '冲刺班',
+    title: card.title || card.topic || '冲刺速记', prompt: card.question || '',
+    answer: card.answer || (card.digestTerms || []).join('、') };
+}
+
+function updateCommonQuickStar() {
+  const note = sprintQuickNote(), button = $('#commonQuickStar');
+  button.hidden = !note;
+  $('#commonQuickFooter').classList.toggle('has-star', Boolean(note));
+  if (note) updateStarButton(button, note.key);
+}
+
 function markSprintQuickLearned(card) {
   if (!commonQuickGroup.startsWith('sprint')) return;
   saved.sprintQuickLearned = saved.sprintQuickLearned || {};
@@ -175,6 +190,7 @@ function renderCommonQuick() {
   $('#commonQuickTopic').textContent = card.title;
   renderCommonQuickProgress();
   $('#commonQuickQuestion').innerHTML = renderCommonQuickQuestion(card, 0);
+  updateCommonQuickStar();
   renderCommonQuickMemory(card, false);
   $('#commonQuickHint').textContent = `点击显示第 1 空 · 共 ${card.digestTerms.length} 空`;
   $('#commonQuickCard').setAttribute('aria-label', '显示第 1 空答案');
@@ -268,6 +284,8 @@ function advanceCommonQuick() {
 $('#commonPoliticsBack').onclick = openPolitics;
 $('#commonLawCourse').onclick = openLawKnowledge;
 $('#commonQuickBack').onclick = () => { saveCommonQuickPosition(); returnFromQuick(); };
+$('#commonQuickStar').onclick = () => { const note = sprintQuickNote(); if (note) toggleStar(note, $('#commonQuickStar')); };
+$('#notebookBack').addEventListener('click', () => { if (notebookReturn === 'commonQuick') updateCommonQuickStar(); });
 $('#sprintBack').onclick = openPolitics;
 $('#commonQuickCard').onclick = advanceCommonQuick;
 $('#commonQuickCard').onkeydown = event => {

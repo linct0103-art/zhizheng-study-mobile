@@ -56,6 +56,16 @@ function expandSprintDigest() {
       originalCardId: id, sprintMatched: true };
   }).filter(Boolean);
   SPRINT_DIGEST.cards.push(...matchedTheory, ...matchedCurrent, ...matchedCommon);
+  SPRINT_DIGEST.cards = SPRINT_DIGEST.cards.map(card => {
+    if (card.group !== 'theory') return card;
+    const correction = SPRINT_THEORY_CORRECTIONS[card.id];
+    if (!correction) return card;
+    const [question, digestTerms] = correction;
+    if ((question.match(/_{2,}/g) || []).length !== digestTerms.length) {
+      throw new Error(`冲刺政治理论挖空数量不匹配：${card.id}`);
+    }
+    return { ...card, question, digestTerms, answer: fill(question, digestTerms) };
+  }).filter(card => !SPRINT_THEORY_EXCLUDE.has(card.id));
   SPRINT_DIGEST.cards.sort((a, b) => a.digestPage - b.digestPage || a.id.localeCompare(b.id));
   sprintDeckReady = true;
 }

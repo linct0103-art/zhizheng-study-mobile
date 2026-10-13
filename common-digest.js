@@ -87,6 +87,19 @@ function migrateSprintTheoryChecklistProgress() {
     const replacement = theory.find(card => card.legacyIds?.includes(oldId));
     if (replacement) saved.commonQuickPosition[groupId] = replacement.id;
   }
+  for (const [key, note] of Object.entries(saved.starred || {})) {
+    if (!key.startsWith('sprint:')) continue;
+    const oldId = key.slice('sprint:'.length);
+    const candidates = theory.filter(card => card.legacyIds?.includes(oldId));
+    if (!candidates.length) continue;
+    const replacement = candidates[0];
+    const newKey = `sprint:${replacement.id}`;
+    saved.starred[newKey] = saved.starred[newKey] || {
+      ...note, key: newKey, group: replacement.volume, title: replacement.title,
+      prompt: replacement.question, answer: replacement.answer
+    };
+    delete saved.starred[key];
+  }
   saved.sprintTheoryChecklistMigrated = true;
   localStorage.setItem('zhizhengStats', JSON.stringify(saved));
 }

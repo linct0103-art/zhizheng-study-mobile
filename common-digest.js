@@ -4,14 +4,9 @@ let sprintDeckReady = false;
 
 function expandSprintDigest() {
   if (sprintDeckReady) return;
-  const theoryById = new Map(digestBank.map(card => [card.id, card]));
   const commonById = new Map(COMMON_DIGEST.cards.map(card => [card.id, card]));
   const currentById = SPRINT_CURRENT_SOURCE;
   const stripNumber = text => String(text || '').replace(/^\s*(?:[（(]?\d{1,2}[）)、.]\s*)+/, '');
-  const fill = (question, terms) => {
-    let index = 0;
-    return question.replace(/_{2,}/g, () => terms[index++]);
-  };
   const currentTerm = (source, answer) => {
     const preferred = currentKeyTerms(source).find(value => value.length >= 3 && value.length <= 22 && answer.includes(value) && !/^\d{4}\s*年/.test(value));
     if (preferred) return preferred;
@@ -24,17 +19,6 @@ function expandSprintDigest() {
     const clause = clauses.find(text => text.length >= 6 && text.length <= 20) || clauses.find(text => text.length > 20);
     return clause ? clause.slice(0, 16) : '';
   };
-  const matchedTheory = SPRINT_MATCHES.theory.map(([id, page]) => {
-    const source = theoryById.get(id);
-    if (!source) return null;
-    const question = stripNumber(source.prompt);
-    const terms = source.answers || [];
-    if (!terms.length || (question.match(/_{2,}/g) || []).length !== terms.length) return null;
-    return { id: `sprint-reuse-${id}`, group: 'theory', volume: '冲刺班 · 政治理论',
-      category: '政治理论', title: source.topic, topic: source.topic, question,
-      answer: fill(question, terms), digestTerms: terms, digestPage: page,
-      sourceFile: SPRINT_DIGEST.source, originalCardId: id, sprintMatched: true };
-  }).filter(Boolean);
   const matchedCurrent = SPRINT_MATCHES.current.map(([id, page]) => {
     if (typeof CURRENT_MISGROUPED_CARD_IDS !== 'undefined' && CURRENT_MISGROUPED_CARD_IDS.has(id)) return null;
     const source = currentById.get(id);
@@ -55,17 +39,10 @@ function expandSprintDigest() {
       question, answer, digestPage: page, sourceFile: SPRINT_DIGEST.source,
       originalCardId: id, sprintMatched: true };
   }).filter(Boolean);
-  SPRINT_DIGEST.cards.push(...matchedTheory, ...matchedCurrent, ...matchedCommon);
-  SPRINT_DIGEST.cards = SPRINT_DIGEST.cards.map(card => {
-    if (card.group !== 'theory') return card;
-    const correction = SPRINT_THEORY_CORRECTIONS[card.id];
-    if (!correction) return card;
-    const [question, digestTerms] = correction;
-    if ((question.match(/_{2,}/g) || []).length !== digestTerms.length) {
-      throw new Error(`冲刺政治理论挖空数量不匹配：${card.id}`);
-    }
-    return { ...card, question, digestTerms, answer: fill(question, digestTerms) };
-  }).filter(card => !SPRINT_THEORY_EXCLUDE.has(card.id));
+  // Political-theory prompts and blank positions come only from the sprint digest.
+  // The lecture supplies the answers, never a replacement question.
+  SPRINT_DIGEST.cards = SPRINT_DIGEST.cards.filter(card => card.group !== 'theory')
+    .concat(SPRINT_THEORY_DIGEST_CARDS, matchedCurrent, matchedCommon);
   SPRINT_DIGEST.cards.sort((a, b) => a.digestPage - b.digestPage || a.id.localeCompare(b.id));
   sprintDeckReady = true;
 }
@@ -80,6 +57,7 @@ function commonPool(groupId) {
 }
 
 function restoreSprintQuickProgress() {
+  migrateSprintTheoryChecklistProgress();
   if (saved.sprintQuickProgressMigrated) return;
   saved.sprintQuickLearned = saved.sprintQuickLearned || {};
   // The old version saved only the resume card. Reaching it required revealing every earlier card.
@@ -91,6 +69,25 @@ function restoreSprintQuickProgress() {
     for (let index = 0; index < resumeIndex; index++) saved.sprintQuickLearned[deck[index].id] = true;
   }
   saved.sprintQuickProgressMigrated = true;
+  localStorage.setItem('zhizhengStats', JSON.stringify(saved));
+}
+
+function migrateSprintTheoryChecklistProgress() {
+  if (saved.sprintTheoryChecklistMigrated) return;
+  expandSprintDigest();
+  saved.sprintQuickLearned = saved.sprintQuickLearned || {};
+  const theory = SPRINT_DIGEST.cards.filter(card => card.group === 'theory');
+  for (const card of theory) {
+    if (card.legacyIds?.some(id => saved.sprintQuickLearned[id])) {
+      saved.sprintQuickLearned[card.id] = true;
+    }
+  }
+  for (const groupId of ['sprint-theory', 'sprint']) {
+    const oldId = saved.commonQuickPosition?.[groupId];
+    const replacement = theory.find(card => card.legacyIds?.includes(oldId));
+    if (replacement) saved.commonQuickPosition[groupId] = replacement.id;
+  }
+  saved.sprintTheoryChecklistMigrated = true;
   localStorage.setItem('zhizhengStats', JSON.stringify(saved));
 }
 

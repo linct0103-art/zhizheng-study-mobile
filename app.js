@@ -571,6 +571,15 @@ function ensureExamTrapReviewData(){
   saved.examTrapChoices=saved.examTrapChoices||{};
   saved.examTrapReview=saved.examTrapReview||{};
   let changed=false;
+  if(!saved.examTrapImportedReviewInitialized){
+    for(const card of EXAM_TRAP_CARDS){
+      if(card.initialReview&&!saved.examTrapReview[card.id]){
+        saved.examTrapReview[card.id]={stage:0,next:currentDateKey(),last:currentDateKey(),reviews:0};
+      }
+    }
+    saved.examTrapImportedReviewInitialized=true;
+    changed=true;
+  }
   for(const card of EXAM_TRAP_CARDS){
     const choice=saved.examTrapChoices[card.id];
     if(typeof choice==='boolean'&&choice!==card.drillIsCorrect&&!saved.examTrapReview[card.id]){

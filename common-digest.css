@@ -74,7 +74,7 @@
 .common-quick-card { --quick-font-size: 18px; width: 100%; flex: 1; min-width: 0; min-height: 0; overflow: hidden; display: flex; flex-direction: column; justify-content: center; padding: 24px 32px; border: 1px solid #e6ddd2; border-radius: 22px; background: rgba(255,252,247,.9); box-shadow: 0 16px 40px #47342810; cursor: pointer; touch-action: manipulation; font-size: var(--quick-font-size); }
 .common-quick-content { width: 100%; flex: none; min-width: 0; overflow-wrap: anywhere; }
 .common-quick-content > small { display: block; color: var(--muted); font: 12px/1.5 var(--sans); margin-bottom: .9em; }
-.common-quick-content > h2 { font: 500 1em/1.7 var(--serif); margin: 0; overflow-wrap: anywhere; }
+.common-quick-content > h2 { font: 500 1em/1.7 var(--serif); margin: 0; overflow-wrap: anywhere; white-space: pre-line; }
 .common-quick-blank { display: inline; padding: 0 .08em; border-bottom: 1px solid #a72e3280; color: var(--red); font-weight: 700; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
 .common-quick-answer { visibility: hidden; }
 .common-quick-keyword, .study-keyword { color: var(--red); }

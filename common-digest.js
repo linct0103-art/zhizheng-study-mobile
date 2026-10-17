@@ -5,32 +5,7 @@ let sprintDeckReady = false;
 function expandSprintDigest() {
   if (sprintDeckReady) return;
   const commonById = new Map(COMMON_DIGEST.cards.map(card => [card.id, card]));
-  const currentById = SPRINT_CURRENT_SOURCE;
   const stripNumber = text => String(text || '').replace(/^\s*(?:[（(]?\d{1,2}[）)、.]\s*)+/, '');
-  const currentTerm = (source, answer) => {
-    const preferred = currentKeyTerms(source).find(value => value.length >= 3 && value.length <= 22 && answer.includes(value) && !/^\d{4}\s*年/.test(value));
-    if (preferred) return preferred;
-    const quoted = [...answer.matchAll(/[“「]([^”」]{3,16})[”」]/g)]
-      .map(match => match[1]).find(value => /[\u4e00-\u9fa5]/.test(value) && !/第\d+期|求是/.test(value));
-    if (quoted) return quoted;
-    const keyword = answer.match(/(?:根本|核心|关键|首要|必须|坚持|应当|标志|推动|建设)[^，。；、]{3,14}/)?.[0];
-    if (keyword) return keyword;
-    const clauses = answer.split(/[，。；：]/).map(text => text.trim()).filter(text => /[\u4e00-\u9fa5]{4}/.test(text) && !/^\d{4}\s*年/.test(text));
-    const clause = clauses.find(text => text.length >= 6 && text.length <= 20) || clauses.find(text => text.length > 20);
-    return clause ? clause.slice(0, 16) : '';
-  };
-  const matchedCurrent = SPRINT_MATCHES.current.map(([id, page]) => {
-    if (typeof CURRENT_MISGROUPED_CARD_IDS !== 'undefined' && CURRENT_MISGROUPED_CARD_IDS.has(id)) return null;
-    const source = currentById.get(id);
-    if (!source) return null;
-    const answer = currentCleanText(source.answer).trim();
-    const term = currentTerm(source, answer);
-    if (!term || answer.length > 220) return null;
-    return { id: `sprint-reuse-${id}`, group: 'current', volume: '冲刺班 · 时政热点',
-      category: '时政热点', title: source.title, topic: source.title,
-      question: answer.replace(term, '______'), answer, digestTerms: [term],
-      digestPage: page, sourceFile: SPRINT_DIGEST.source, originalCardId: id, sprintMatched: true };
-  }).filter(Boolean);
   const matchedCommon = SPRINT_MATCHES.common.map(([id, page]) => {
     const source = commonById.get(id);
     if (!source) return null;
@@ -41,8 +16,8 @@ function expandSprintDigest() {
   }).filter(Boolean);
   // Political-theory prompts and blank positions come only from the sprint digest.
   // The lecture supplies the answers, never a replacement question.
-  SPRINT_DIGEST.cards = SPRINT_DIGEST.cards.filter(card => card.group !== 'theory')
-    .concat(SPRINT_THEORY_DIGEST_CARDS, matchedCurrent, matchedCommon);
+  SPRINT_DIGEST.cards = SPRINT_DIGEST.cards.filter(card => card.group !== 'theory' && card.group !== 'current')
+    .concat(SPRINT_THEORY_DIGEST_CARDS, SPRINT_CURRENT_DIGEST_CARDS, matchedCommon);
   SPRINT_DIGEST.cards.sort((a, b) => a.digestPage - b.digestPage || a.id.localeCompare(b.id));
   sprintDeckReady = true;
 }
@@ -58,6 +33,7 @@ function commonPool(groupId) {
 
 function restoreSprintQuickProgress() {
   migrateSprintTheoryChecklistProgress();
+  migrateSprintCurrentChecklistProgress();
   if (saved.sprintQuickProgressMigrated) return;
   saved.sprintQuickLearned = saved.sprintQuickLearned || {};
   // The old version saved only the resume card. Reaching it required revealing every earlier card.
@@ -101,6 +77,37 @@ function migrateSprintTheoryChecklistProgress() {
     delete saved.starred[key];
   }
   saved.sprintTheoryChecklistMigrated = true;
+  localStorage.setItem('zhizhengStats', JSON.stringify(saved));
+}
+
+function migrateSprintCurrentChecklistProgress() {
+  if (saved.sprintCurrentChecklistMigrated) return;
+  expandSprintDigest();
+  saved.sprintQuickLearned = saved.sprintQuickLearned || {};
+  const current = SPRINT_DIGEST.cards.filter(card => card.group === 'current');
+  for (const card of current) {
+    if (card.legacyIds?.length && card.legacyIds.every(id => saved.sprintQuickLearned[id])) {
+      saved.sprintQuickLearned[card.id] = true;
+    }
+  }
+  for (const groupId of ['sprint-current', 'sprint']) {
+    const oldId = saved.commonQuickPosition?.[groupId];
+    const replacement = current.find(card => card.legacyIds?.includes(oldId));
+    if (replacement) saved.commonQuickPosition[groupId] = replacement.id;
+  }
+  for (const [key, note] of Object.entries(saved.starred || {})) {
+    if (!key.startsWith('sprint:')) continue;
+    const oldId = key.slice('sprint:'.length);
+    const replacement = current.find(card => card.legacyIds?.includes(oldId));
+    if (!replacement) continue;
+    const newKey = `sprint:${replacement.id}`;
+    saved.starred[newKey] = saved.starred[newKey] || {
+      ...note, key: newKey, group: replacement.volume, title: replacement.title,
+      prompt: replacement.question, answer: replacement.answer
+    };
+    delete saved.starred[key];
+  }
+  saved.sprintCurrentChecklistMigrated = true;
   localStorage.setItem('zhizhengStats', JSON.stringify(saved));
 }
 
@@ -189,7 +196,7 @@ function startCommonDigest(groupId) {
 
 
 function renderCommonQuickQuestion(card, revealCount) {
-  const question = digestDisplayText(card.question);
+  const question = card.digestBlock ? card.question : digestDisplayText(card.question);
   const emphasis = createStudyEmphasis(question, card);
   let index = 0;
   return question.split(/(_{2,})/g).map(part => {
@@ -212,8 +219,8 @@ function renderCommonQuick() {
   $('#commonQuickQuestion').innerHTML = renderCommonQuickQuestion(card, 0);
   updateCommonQuickStar();
   renderCommonQuickMemory(card, false);
-  $('#commonQuickHint').textContent = `点击显示第 1 空 · 共 ${card.digestTerms.length} 空`;
-  $('#commonQuickCard').setAttribute('aria-label', '显示第 1 空答案');
+  $('#commonQuickHint').textContent = card.digestTerms.length ? `点击显示第 1 空 · 共 ${card.digestTerms.length} 空` : '点击下一张 →';
+  $('#commonQuickCard').setAttribute('aria-label', card.digestTerms.length ? '显示第 1 空答案' : '下一张');
   $('#commonQuickPrev').disabled = commonQuickIndex === 0;
   $('#commonQuickCard').scrollTop = 0;
   fitCommonQuick();
@@ -242,19 +249,17 @@ function renderCommonQuickMemory(card, revealed) {
 function fitCommonQuick() {
   const card = $('#commonQuickCard');
   const content = $('#commonQuickContent');
-  if (window.matchMedia('(max-width: 600px)').matches) {
-    card.style.setProperty('--quick-font-size', '16px');
-    return;
-  }
   if (!card.clientHeight || !card.clientWidth) return;
   const style = window.getComputedStyle(card);
   const height = card.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom);
   const width = card.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
   if (height <= 0 || width <= 0) return;
-  const maximum = card.clientWidth < 560 ? 16 : 18;
+  const mobile = window.matchMedia('(max-width: 600px)').matches;
+  const maximum = mobile || card.clientWidth < 560 ? 16 : 18;
+  const minimum = mobile ? 12 : 8;
   // Measure the complete layout (concealed answers and mnemonic included) once.
   // Revealing an answer never refits or changes type size.
-  for (let size = maximum; size >= 8; size -= .5) {
+  for (let size = maximum; size >= minimum; size -= .5) {
     card.style.setProperty('--quick-font-size', `${size}px`);
     if (content.getBoundingClientRect().height <= height + .5 && content.scrollWidth <= width + 1) break;
   }
@@ -275,6 +280,7 @@ function saveCommonQuickPosition() {
 function advanceCommonQuick() {
   const card = commonQuickDeck[commonQuickIndex];
   if (!card) return;
+  if (!card.digestTerms.length) markSprintQuickLearned(card);
   if (commonQuickRevealCount < card.digestTerms.length) {
     commonQuickRevealCount++;
     $('#commonQuickQuestion').innerHTML = renderCommonQuickQuestion(card, commonQuickRevealCount);

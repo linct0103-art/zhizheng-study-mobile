@@ -5,18 +5,19 @@
   <meta name="theme-color" content="#f5f1e8"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><title>知政 · 政治理论排坑</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@600;700;900&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20261017-priority-stars">
+  <link rel="stylesheet" href="styles.css?v=20261017-focus-nav">
   <link rel="stylesheet" href="common-digest.css?v=20261017-checklist-blocks">
-  <link rel="stylesheet" href="mobile.css?v=20261017-ui-cleanup">
+  <link rel="stylesheet" href="mobile.css?v=20261017-focus-nav">
   <link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon.svg" type="image/svg+xml">
 </head>
 <body>
 <div class="grain"></div>
 <header>
   <a class="brand" href="#"><span class="brand-mark">知</span><span>知政</span></a>
-  <nav class="subject-nav" aria-label="学习导航"><button class="selected" data-main="politics"><span>01</span>政治理论</button><button data-main="knowledge"><span>02</span>常识判断</button><button class="priority-entry" data-main="sprint"><span>03</span><b class="priority-star" aria-hidden="true">★</b>冲刺班</button><button id="notebookEntry" class="priority-entry"><b class="priority-star" aria-hidden="true">★</b>重点本</button></nav>
+  <nav class="subject-nav" aria-label="基础学习导航"><button class="selected" data-main="politics"><span>01</span>政治理论</button><button data-main="knowledge"><span>02</span>常识判断</button></nav>
   <div class="header-meta"><span id="today"></span><span class="divider"></span><span>政治理论 · 常识判断 · 冲刺班</span></div>
 </header>
+<nav class="focus-nav" aria-label="重点刷导航"><span class="focus-nav-label"><b aria-hidden="true">★</b>重点刷</span><div class="focus-nav-links"><button type="button" data-focus="current">月半时政</button><button type="button" data-focus="examTrap">卷子排坑</button><button type="button" data-main="sprint" data-focus="sprint">冲刺班</button><button type="button" id="notebookEntry" data-focus="notebook">重点本</button></div></nav>
 <main>
 <section id="hubView" class="view study-hub" aria-hidden="true">
   <div class="hub-heading"><p>今日学习入口</p><h1>基础板块，分开学清楚</h1><span>冲刺班可从顶部独立入口进入。</span></div>
@@ -125,7 +126,7 @@
 <script src="sprint-common-order.js?v=20261017-blocks"></script>
 <script src="sprint-current-digest.js?v=20261017-checklist-blocks"></script>
 <script src="verified-targets.js?v=20260930-mobile-click-fix"></script>
-<script src="knowledge-data.js?v=20260930-mobile-click-fix"></script><script src="current-affairs-data.js?v=20261006-september-lower"></script><script src="sprint-matched-index.js?v=20261006-full"></script><script src="current-affairs-course-emphasis.js?v=20260930-mobile-click-fix"></script><script src="current-affairs-july-lower.js?v=20260923-digest-verified"></script><script src="current-affairs-august-upper.js?v=20260830-course-focus"></script><script src="current-affairs-digest-checklists.js?v=20261006-september-lower"></script><script src="major-topic-data.js?v=20260912-integrity"></script><script src="exam-trap-data.js?v=20261014-batch12"></script><script src="app.js?v=20261017-notebook-flash"></script>
+<script src="knowledge-data.js?v=20260930-mobile-click-fix"></script><script src="current-affairs-data.js?v=20261006-september-lower"></script><script src="sprint-matched-index.js?v=20261006-full"></script><script src="current-affairs-course-emphasis.js?v=20260930-mobile-click-fix"></script><script src="current-affairs-july-lower.js?v=20260923-digest-verified"></script><script src="current-affairs-august-upper.js?v=20260830-course-focus"></script><script src="current-affairs-digest-checklists.js?v=20261006-september-lower"></script><script src="major-topic-data.js?v=20260912-integrity"></script><script src="exam-trap-data.js?v=20261014-batch12"></script><script src="app.js?v=20261017-focus-nav"></script>
 <script src="common-digest.js?v=20261017-all-blocks"></script>
 <script src="confusion-data.js?v=20261009-expanded"></script><script src="confusion.js?v=20261009-heading"></script>
 </body></html>

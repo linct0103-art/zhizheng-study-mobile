@@ -270,9 +270,50 @@ function toggleStar(note,button){if(saved.starred[note.key])delete saved.starred
 function digestNote(){const q=digestDeck[digestIndex];return q&&{key:`digest:${questionKey(q)}`,group:'政治理论 · 消化清单',title:q.topic||'固定表述',prompt:q.prompt||'',answer:digestCorrectText(q),tip:'核对固定表述与易替换关键词'}}
 function currentNote(){const x=currentFlashDeck[currentFlashIndex];if(!x)return null;const isQuestion=currentContentKind==='question'||x.reviewKind==='question',isDigest=!isQuestion&&Boolean(x.digestChecklist),isDrill=!isDigest&&(currentContentKind==='drill'||currentContentKind==='examTrap'||x.reviewKind==='drill'||Boolean(x.drillType)),group=currentContentKind==='commonDigest'?'常识消化清单':currentContentKind==='majorDigest'?'重大专题时政':currentContentKind==='examTrap'?'卷子排坑清单':'月半时政',swap=typeof x.drillSwap==='string'?x.drillSwap.trim():'',term=typeof x.drillTerm==='string'?x.drillTerm.trim():'';return {key:`current:${x.id}`,group:`${group} · ${x.volume||''}`,title:x.newsTitle||x.title||'时政重点',prompt:isDigest?x.question:isQuestion?currentCleanText(x.question):isDrill?x.drillQuestion:x.title,answer:isQuestion?currentQuestionReference(x):currentCleanText(x.answer),tip:isDrill?(x.drillIsCorrect?'原句正确，防止见熟词一律判错':swap&&term?`${swap} ≠ ${term}`:x.trap||''):(x.trap||'')}}
 function lawNote(){const x=flashDeck[flashIndex];return x&&{key:`law:${x.title}`,group:`法律常识 · ${knowledgeLawGroup(x)}`,title:x.title,prompt:knowledgeExamQuestion(x),answer:knowledgeCoreAnswer(x),tip:x.trap||'',points:(x.points||[]).slice(0,3)}}
-let notebookReturn='home';
-function renderNotebook(){const notes=Object.values(saved.starred).sort((a,b)=>String(b.savedAt||'').localeCompare(String(a.savedAt||'')));let cleaned=false;for(const note of notes){if(typeof note.tip==='string'&&/\b(?:undefined|null)\b/i.test(note.tip)){note.tip='';cleaned=true}}if(cleaned)saveStarred();$('#notebookCount').textContent=`${notes.length} 条`;$('#notebookClear').disabled=!notes.length;$('#notebookList').innerHTML=notes.length?notes.map(note=>`<article><header><span>${escapeHTML(note.group)}</span><button data-remove-star="${escapeHTML(note.key)}" title="取消标星">★</button></header><h2>${escapeHTML(note.title)}</h2>${note.prompt?`<p class="note-prompt">${highlightStudyText(note.prompt,'all')}</p>`:''}<div class="note-answer"><small>核心内容</small><strong>${highlightStudyText(note.answer,'all')}</strong></div>${note.points?.length?`<ul>${note.points.map(x=>`<li>${highlightStudyText(x,'all')}</li>`).join('')}</ul>`:''}${note.tip?`<p class="note-tip"><b>易混</b>${escapeHTML(note.tip)}</p>`:''}</article>`).join(''):'<div class="notebook-empty"><b>还没有标星内容</b><span>学习闪卡时点击“☆ 标星”，重点会集中到这里。</span></div>';$$('[data-remove-star]').forEach(button=>button.onclick=()=>{delete saved.starred[button.dataset.removeStar];saveStarred();renderNotebook()})}
-function openNotebook(){notebookReturn=Object.entries(views).find(([,view])=>view.classList.contains('active'))?.[0]||'home';renderNotebook();show('notebook');$$('.subject-nav button').forEach(button=>button.classList.toggle('selected',button.id==='notebookEntry'))}
+let notebookReturn='home',notebookIndex=0,notebookRevealed=false,notebookKey='';
+function notebookCards(){return Object.values(saved.starred).sort((a,b)=>String(b.savedAt||'').localeCompare(String(a.savedAt||'')))}
+function fitNotebookCard(){
+  const card=$('#notebookCard'),content=$('#notebookFlashContent');
+  if(!card.clientHeight||!card.clientWidth)return;
+  const style=getComputedStyle(card),height=card.clientHeight-parseFloat(style.paddingTop)-parseFloat(style.paddingBottom);
+  for(let size=matchMedia('(max-width:760px)').matches?19:24;size>=10;size-=.5){
+    card.style.setProperty('--notebook-font-size',`${size}px`);
+    if(content.scrollHeight<=height+1&&content.scrollWidth<=card.clientWidth-parseFloat(style.paddingLeft)-parseFloat(style.paddingRight)+1)break;
+  }
+}
+function renderNotebook(){
+  const notes=notebookCards();
+  for(const note of notes)if(typeof note.tip==='string'&&/\b(?:undefined|null)\b/i.test(note.tip))note.tip='';
+  if(notebookKey){const found=notes.findIndex(note=>note.key===notebookKey);if(found>=0)notebookIndex=found}
+  notebookIndex=Math.max(0,Math.min(notebookIndex,notes.length-1));
+  const note=notes[notebookIndex];notebookKey=note?.key||'';
+  $('#notebookCount').textContent=note?`${notebookIndex+1} / ${notes.length}`:'0 / 0';
+  $('#notebookCard').classList.toggle('hidden',!note);
+  $('#notebookEmpty').classList.toggle('hidden',Boolean(note));
+  $('#notebookClear').disabled=$('#notebookRemove').disabled=$('#notebookNext').disabled=!note;
+  $('#notebookPrev').disabled=notebookIndex===0;
+  if(!note)return;
+  const prompt=String(note.prompt||'').trim(),title=String(note.title||'重点内容').trim();
+  $('#notebookGroup').textContent=note.group||'标星重点';
+  $('#notebookTitle').textContent=title;
+  const answer=String(note.answer||'').trim();
+  const front=prompt&&prompt!==title?prompt:'先回想这条重点，再点卡片查看答案。';
+  const points=Array.isArray(note.points)&&note.points.length?`<ul>${note.points.map(item=>`<li>${highlightStudyText(String(item),'all')}</li>`).join('')}</ul>`:'';
+  const tip=note.tip?`<small>易混提醒：${escapeHTML(note.tip)}</small>`:'';
+  $('#notebookBody').innerHTML=notebookRevealed?`${highlightStudyText(answer||'暂无答案','all')}${points}${tip}`:highlightStudyText(front,'all');
+  $('#notebookCard').classList.toggle('is-answer',notebookRevealed);
+  $('#notebookCard').setAttribute('aria-label',notebookRevealed?'下一张重点卡':'显示重点答案');
+  $('#notebookHint').textContent=notebookRevealed?'再点一下，下一张':'点击显示答案';
+  $('#notebookNext').textContent=notebookIndex===notes.length-1?'回到第一张 ↻':'下一张 →';
+  fitNotebookCard();
+}
+function advanceNotebook(){
+  const notes=notebookCards();if(!notes.length)return;
+  if(!notebookRevealed)notebookRevealed=true;
+  else{notebookIndex=(notebookIndex+1)%notes.length;notebookKey=notes[notebookIndex].key;notebookRevealed=false}
+  renderNotebook();
+}
+function openNotebook(){notebookReturn=Object.entries(views).find(([,view])=>view.classList.contains('active'))?.[0]||'home';notebookRevealed=false;show('notebook');renderNotebook();$$('.subject-nav button').forEach(button=>button.classList.toggle('selected',button.id==='notebookEntry'))}
 function editSimilarity(a,b){if(!a||!b)return 0;const rows=Array.from({length:a.length+1},(_,i)=>[i]);for(let j=1;j<=b.length;j++)rows[0][j]=j;for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++)rows[i][j]=Math.min(rows[i-1][j]+1,rows[i][j-1]+1,rows[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return 1-rows[a.length][b.length]/Math.max(a.length,b.length)}
 const correctionPairs=[['十八大','十九大'],['十九大','十八大'],['化学反应','物理反应'],['中华优秀传统文化','中国具体实际'],['共同富裕','同等富裕'],['共同富裕','同步富裕'],['党的领导','高质量发展'],['市场','政府'],['市场','国家'],['国内','国际'],['人民安全','政治安全'],['政治安全','人民安全'],['经济安全','政治安全'],['自我革命','人民监督'],['科技','人才'],['人才','创新'],['具体劳动','抽象劳动'],['使用价值','价值'],['价值','使用价值'],['生产力','生产关系'],['社会存在','社会意识'],['实践','认识']];
 const wrongTargetOverrides={
@@ -913,6 +954,12 @@ $$('.back-hub').forEach(b=>b.onclick=openPolitics);$$('[data-main]').forEach(b=>
 $('#knowledgePrev').onclick=()=>{if(knowledgePage>0){knowledgePage--;renderKnowledge()}};$('#knowledgeNext').onclick=()=>{knowledgePage++;renderKnowledge()};
 enhanceKnowledgeUI();$('#flashStart').onclick=()=>knowledgeFilter==='全部法律'?startFlash('new'):startFlash('section',knowledgeFilter);$('#knowledgeReview').onclick=()=>startFlash('review');$('#flashBack').onclick=()=>{renderKnowledge();show('knowledge')};$('#flashFlip').onclick=()=>$('#flashCard').classList.add('flipped');$('#flashFlipBack').onclick=()=>markFlash('known');$('#flashPrev').onclick=()=>{if(flashIndex>0){flashIndex--;renderFlash()}};$('#flashNext').onclick=()=>{if(flashIndex<flashDeck.length-1){flashIndex++;renderFlash()}};$('#flashKnown').onclick=()=>markFlash('known');$('#flashFuzzy').onclick=()=>markFlash('fuzzy');$('#flashAgain').onclick=()=>markFlash('again');
 $('#digestStar').onclick=()=>{const note=digestNote();if(note)toggleStar(note,$('#digestStar'))};$('#currentFlashStar').onclick=()=>{const note=currentNote();if(note)toggleStar(note,$('#currentFlashStar'))};$('#flashStar').onclick=()=>{const note=lawNote();if(note)toggleStar(note,$('#flashStar'))};$('#notebookEntry').onclick=openNotebook;$('#notebookBack').onclick=()=>{show(notebookReturn);const sprintSide=notebookReturn==='sprint'||(notebookReturn==='commonQuick'&&commonQuickGroup.startsWith('sprint'));const knowledgeSide=['knowledge','flash','commonDigest'].includes(notebookReturn)||(notebookReturn==='commonQuick'&&!sprintSide)||(notebookReturn==='currentFlash'&&currentFlashReturn==='commonDigest');$$('.subject-nav button').forEach(button=>button.classList.toggle('selected',button.dataset.main===(sprintSide?'sprint':knowledgeSide?'knowledge':'politics')))};$('#notebookClear').onclick=()=>{if(confirm('确定清空全部标星笔记吗？')){saved.starred={};saveStarred();renderNotebook()}};
+$('#notebookCard').onclick=advanceNotebook;
+$('#notebookCard').onkeydown=event=>{if(event.key===' '||event.key==='Enter'){event.preventDefault();advanceNotebook()}};
+$('#notebookPrev').onclick=()=>{if(notebookIndex>0){notebookIndex--;notebookKey=notebookCards()[notebookIndex]?.key||'';notebookRevealed=false;renderNotebook()}};
+$('#notebookNext').onclick=()=>{const notes=notebookCards();if(!notes.length)return;notebookIndex=(notebookIndex+1)%notes.length;notebookKey=notes[notebookIndex].key;notebookRevealed=false;renderNotebook()};
+$('#notebookRemove').onclick=()=>{const note=notebookCards()[notebookIndex];if(!note)return;delete saved.starred[note.key];saveStarred();notebookKey='';notebookRevealed=false;renderNotebook()};
+if(typeof ResizeObserver!=='undefined')new ResizeObserver(fitNotebookCard).observe($('#notebookCard'));
 const currentFlashFuzzy=document.createElement('button');currentFlashFuzzy.id='currentFlashFuzzy';currentFlashFuzzy.textContent='有点模糊';$('#currentFlashKnown').before(currentFlashFuzzy);
 $('#currentAll').onclick=openCurrentOverview;$('#currentDigestAll').onclick=()=>startCurrentDrills();$('#majorTopicAll').onclick=()=>startMajorTopic();$('#majorDigestAll').onclick=()=>startMajorTopic();$('#examTrapAll').onclick=()=>startExamTrap();$('#examTrapReview').onclick=()=>startExamTrap(null,'review');$('#currentFlashBack').onclick=()=>{if(currentFlashReturn==='commonDigest'){openCommonDigest()}else if(currentFlashReturn==='majorTopic'){renderMajorTopics();show('majorTopic')}else if(currentFlashReturn==='examTrap'){renderExamTraps();show('examTrap')}else{renderCurrent();show('current')}};$('#currentFlashFlip').onclick=revealCurrentFlash;$('#currentFlashPrev').onclick=()=>{if(currentFlashIndex>0){currentFlashIndex--;renderCurrentFlash()}};$('#currentFlashNext').onclick=()=>{if(currentFlashIndex<currentFlashDeck.length-1){currentFlashIndex++;renderCurrentFlash()}else if(currentContentKind==='examTrap'&&typeof saved.examTrapChoices?.[currentFlashDeck[currentFlashIndex]?.id]==='boolean'){renderExamTraps();show('examTrap')}};$('#currentFlashKnown').onclick=()=>markCurrentFlash('known');currentFlashFuzzy.onclick=()=>markCurrentFlash('fuzzy');$('#currentFlashAgain').onclick=()=>markCurrentFlash('again');
 $('#currentFlashCard .flash-front').onclick=event=>{if(currentContentKind==='examTrap'&&event.target===event.currentTarget&&typeof saved.examTrapChoices?.[currentFlashDeck[currentFlashIndex]?.id]==='boolean')$('#currentFlashNext').click()};

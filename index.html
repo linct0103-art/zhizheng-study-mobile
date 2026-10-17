@@ -5,9 +5,9 @@
   <meta name="theme-color" content="#f5f1e8"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><title>知政 · 政治理论排坑</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@600;700;900&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20261011-category-manage">
+  <link rel="stylesheet" href="styles.css?v=20261017-ui-cleanup">
   <link rel="stylesheet" href="common-digest.css?v=20261017-checklist-blocks">
-  <link rel="stylesheet" href="mobile.css?v=20261011-theory-notes">
+  <link rel="stylesheet" href="mobile.css?v=20261017-ui-cleanup">
   <link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon.svg" type="image/svg+xml">
 </head>
 <body>
@@ -70,7 +70,6 @@
 <section id="flashView" class="view flash-view"><nav class="page-top"><button id="flashBack">← 返回常识目录</button><div><small>记忆闪卡</small><strong id="flashTopic">常识闪卡</strong></div><span id="flashProgress">1 / 20</span></nav><div class="flash-stage"><article id="flashCard" class="flash-card"><div class="flash-front"><span id="flashLevel">S · 法律</span><small>先在脑中作答，再点击翻面</small><h2 id="flashQuestion"></h2><button id="flashFlip">查看答案</button></div><div class="flash-back"><span>核心答案</span><h3 id="flashAnswer"></h3><ul id="flashPoints"></ul><div class="memory-hook"><small>讲话稿记忆钩子</small><strong id="flashMemory"></strong></div><p><b>易错提醒</b><span id="flashTrap"></span></p><button id="flashFlipBack">返回题面</button></div></article><div class="flash-controls"><button id="flashPrev">← 上一张</button><button id="flashStar" class="star-card">☆ 标星</button><button id="flashAgain">还不熟</button><button id="flashKnown">记住了 ✓</button><button id="flashNext">下一张 →</button></div></div></section>
 <section id="homeView" class="view active politics-shell"><aside class="politics-rail"><div><button class="selected" data-politics-view="theory"><i>01</i><span>理论部分</span></button><button data-politics-view="current"><i>02</i><span>月半时政</span></button><button data-politics-view="majorTopic"><i>03</i><span>重大专题</span></button><button data-politics-view="examTrap"><i>04</i><span>卷子排坑</span></button></div></aside><div class="politics-page-body">
   <div class="theory-subnav hidden"><div><button class="selected" data-page="xixiang">习思想</button><button data-page="mayuan">马克思主义基本原理</button></div></div>
-  <button id="theoryNotesEntry" class="theory-notes-entry" type="button" aria-label="打开政治理论便签" title="政治理论便签">✎ <span>便签</span><b id="theoryNotesCount">0</b></button>
   <div class="workspace">
     <section class="entry-card">
       <div class="daily-flow">
@@ -115,15 +114,6 @@
 </section>
 <section id="resultView" class="view result-view"><div class="result-mark"><span>本次掌握度</span><strong id="resultScore">0</strong><small>分</small></div><p class="eyebrow">本轮学习完成</p><h1 id="resultTitle"></h1><p id="resultDesc" class="lead"></p><div id="resultBreakdown" class="result-breakdown"></div><div class="result-actions"><button id="continueBtn" class="primary-btn hidden">继续今日新学习 →</button><button id="retryBtn" class="primary-btn">只练本次错题</button><button id="homeBtn" class="secondary-btn">返回首页</button></div></section>
 </main>
-<div id="theoryNotesDialog" class="theory-notes-overlay hidden" role="dialog" aria-modal="true" aria-label="政治理论便签">
-  <section class="theory-notes-panel">
-    <div class="theory-note-toolbar"><label for="theoryNotesFilter">分类</label><select id="theoryNotesFilter" aria-label="筛选便签分类"></select><button id="theoryCategoryManage" type="button" aria-expanded="false">管理分类</button><button id="theoryNotesClose" type="button" aria-label="关闭便签">×</button></div>
-    <div id="theoryCategoryManager" class="theory-category-manager hidden"><div class="theory-category-heading"><strong>我的分类</strong><button id="theoryCategoryAdd" type="button">＋ 新增</button></div><div id="theoryCategoryList" class="theory-category-list"></div></div>
-    <form id="theoryCategoryForm" class="theory-category-form hidden"><label class="sr-only" for="theoryCategoryName">分类名称</label><input id="theoryCategoryName" type="text" maxlength="20" placeholder="输入分类名称"><button id="theoryCategorySave" type="submit">保存分类</button><button id="theoryCategoryCancel" type="button">取消</button></form>
-    <ol id="theoryNotesList" class="theory-notes-list"></ol>
-    <form id="theoryNotesForm"><label class="sr-only" for="theoryNoteCategory">便签分类</label><select id="theoryNoteCategory" aria-label="便签分类"></select><label class="sr-only" for="theoryNoteText">添加便签</label><textarea id="theoryNoteText" rows="2" maxlength="1200" placeholder="添加一条注意事项……"></textarea><button id="theoryNoteCancel" class="hidden" type="button">取消</button><button id="theoryNoteSave" type="submit" aria-label="添加便签" title="添加便签">＋</button></form>
-  </section>
-</div>
 <script src="study-emphasis.js?v=20260911"></script>
 <script src="common-digest-data.js?v=20260909"></script>
 <script src="common-memory-data.js?v=20260909-memory"></script>
@@ -135,7 +125,7 @@
 <script src="sprint-common-order.js?v=20261017-blocks"></script>
 <script src="sprint-current-digest.js?v=20261017-checklist-blocks"></script>
 <script src="verified-targets.js?v=20260930-mobile-click-fix"></script>
-<script src="knowledge-data.js?v=20260930-mobile-click-fix"></script><script src="current-affairs-data.js?v=20261006-september-lower"></script><script src="sprint-matched-index.js?v=20261006-full"></script><script src="current-affairs-course-emphasis.js?v=20260930-mobile-click-fix"></script><script src="current-affairs-july-lower.js?v=20260923-digest-verified"></script><script src="current-affairs-august-upper.js?v=20260830-course-focus"></script><script src="current-affairs-digest-checklists.js?v=20261006-september-lower"></script><script src="major-topic-data.js?v=20260912-integrity"></script><script src="exam-trap-data.js?v=20261014-batch12"></script><script src="app.js?v=20261014-exam-review"></script>
+<script src="knowledge-data.js?v=20260930-mobile-click-fix"></script><script src="current-affairs-data.js?v=20261006-september-lower"></script><script src="sprint-matched-index.js?v=20261006-full"></script><script src="current-affairs-course-emphasis.js?v=20260930-mobile-click-fix"></script><script src="current-affairs-july-lower.js?v=20260923-digest-verified"></script><script src="current-affairs-august-upper.js?v=20260830-course-focus"></script><script src="current-affairs-digest-checklists.js?v=20261006-september-lower"></script><script src="major-topic-data.js?v=20260912-integrity"></script><script src="exam-trap-data.js?v=20261014-batch12"></script><script src="app.js?v=20261017-ui-cleanup"></script>
 <script src="common-digest.js?v=20261017-all-blocks"></script>
 <script src="confusion-data.js?v=20261009-expanded"></script><script src="confusion.js?v=20261009-heading"></script>
 </body></html>

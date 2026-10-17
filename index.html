@@ -5,7 +5,7 @@
   <meta name="theme-color" content="#f5f1e8"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><title>知政 · 政治理论排坑</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@600;700;900&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20261017-notebook-flash">
+  <link rel="stylesheet" href="styles.css?v=20261017-priority-stars">
   <link rel="stylesheet" href="common-digest.css?v=20261017-checklist-blocks">
   <link rel="stylesheet" href="mobile.css?v=20261017-ui-cleanup">
   <link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -14,20 +14,20 @@
 <div class="grain"></div>
 <header>
   <a class="brand" href="#"><span class="brand-mark">知</span><span>知政</span></a>
-  <nav class="subject-nav" aria-label="学习导航"><button class="selected" data-main="politics"><span>01</span>政治理论</button><button data-main="knowledge"><span>02</span>常识判断</button><button data-main="sprint"><span>03</span>冲刺班</button><button id="notebookEntry"><span>★</span>重点本</button></nav>
+  <nav class="subject-nav" aria-label="学习导航"><button class="selected" data-main="politics"><span>01</span>政治理论</button><button data-main="knowledge"><span>02</span>常识判断</button><button class="priority-entry" data-main="sprint"><span>03</span><b class="priority-star" aria-hidden="true">★</b>冲刺班</button><button id="notebookEntry" class="priority-entry"><b class="priority-star" aria-hidden="true">★</b>重点本</button></nav>
   <div class="header-meta"><span id="today"></span><span class="divider"></span><span>政治理论 · 常识判断 · 冲刺班</span></div>
 </header>
 <main>
 <section id="hubView" class="view study-hub" aria-hidden="true">
   <div class="hub-heading"><p>今日学习入口</p><h1>基础板块，分开学清楚</h1><span>冲刺班可从顶部独立入口进入。</span></div>
   <div class="hub-grid">
-    <article class="hub-card politics-card"><small>01 · 政治理论</small><h2>理论 + 月半时政</h2><p>理论：消化清单＋排坑手册；月半时政：消化清单＋资料题目。</p><div><button id="openTheory"><b>理论学习</b><span>清单学习 · 手册排坑 →</span></button><button id="openCurrent"><b>月半时政</b><span>清单挖空 · 资料做题 →</span></button></div></article>
+    <article class="hub-card politics-card"><small>01 · 政治理论</small><h2>理论 + 月半时政</h2><p>理论：消化清单＋排坑手册；月半时政：消化清单＋资料题目。</p><div><button id="openTheory"><b>理论学习</b><span>清单学习 · 手册排坑 →</span></button><button id="openCurrent"><b><em class="priority-star" aria-hidden="true">★</em>月半时政</b><span>清单挖空 · 资料做题 →</span></button></div></article>
     <article class="hub-card knowledge-card"><small>02 · 常识判断</small><h2>五类常识消化清单</h2><p>文史、科技、经济、地理、法律：每点一次显示一空，全部显示后再点进入下一张。</p><div class="priority-preview"><span><i>01</i>五类常识一页选择</span><span><i>02</i>即点即看，快速记忆</span><span><i>03</i>保留法律课程入口</span></div><button id="openKnowledge" class="hub-primary">进入常识清单 →</button></article>
   </div>
 </section>
 <section id="politicsMenuView" class="view politics-menu-view">
   <button class="back-hub">← 返回两大板块</button><div class="subpage-heading"><small>政治理论</small><h1>选择今天的学习内容</h1></div>
-  <div class="politics-options"><button id="theoryEntry"><span>01</span><div><b>理论部分</b><small>消化清单学习 → 排坑手册辨错</small></div><i>进入 →</i></button><button id="currentEntry"><span>02</span><div><b>月半时政</b><small>每半月：消化清单挖空 → 资料题目</small></div><i>进入 →</i></button><button id="majorTopicEntry"><span>03</span><div><b>重大专题时政</b><small>一份讲义 → 一套消化清单题库</small></div><i>进入 →</i></button><button id="examTrapEntry"><span>04</span><div><b>卷子排坑清单</b><small>根据做过的题 → 判断高频替换</small></div><i>进入 →</i></button></div>
+  <div class="politics-options"><button id="theoryEntry"><span>01</span><div><b>理论部分</b><small>消化清单学习 → 排坑手册辨错</small></div><i>进入 →</i></button><button id="currentEntry" class="priority-entry"><span>02</span><div><b><em class="priority-star" aria-hidden="true">★</em>月半时政</b><small>每半月：消化清单挖空 → 资料题目</small></div><i>进入 →</i></button><button id="majorTopicEntry"><span>03</span><div><b>重大专题时政</b><small>一份讲义 → 一套消化清单题库</small></div><i>进入 →</i></button><button id="examTrapEntry" class="priority-entry"><span>04</span><div><b><em class="priority-star" aria-hidden="true">★</em>卷子排坑清单</b><small>根据做过的题 → 判断高频替换</small></div><i>进入 →</i></button></div>
 </section>
 <section id="currentView" class="view current-view politics-shell"><aside class="politics-rail"><div><button data-politics-view="theory"><i>01</i><span>理论部分</span></button><button class="selected" data-politics-view="current"><i>02</i><span>月半时政</span></button><button data-politics-view="majorTopic"><i>03</i><span>重大专题</span></button><button data-politics-view="examTrap"><i>04</i><span>卷子排坑</span></button></div></aside><div class="politics-page-body"><nav class="page-top"><span class="current-top-tools"><button id="currentDigestAll" class="integrated-digest" title="一体学习全部月份消化清单" aria-label="一体学习全部月份消化清单"><i>∞</i><b id="currentDigestAllProgress">0/0</b></button></span><div><strong>消化清单挖空 → 资料题目 → 到期复习</strong></div><button id="currentAll" class="current-all">全部月份综合练习 →</button></nav><div id="currentGrid" class="current-grid"></div></div></section>
 <section id="majorTopicView" class="view major-topic-view politics-shell"><aside class="politics-rail"><div><button data-politics-view="theory"><i>01</i><span>理论部分</span></button><button data-politics-view="current"><i>02</i><span>月半时政</span></button><button class="selected" data-politics-view="majorTopic"><i>03</i><span>重大专题</span></button><button data-politics-view="examTrap"><i>04</i><span>卷子排坑</span></button></div></aside><div class="politics-page-body"><nav class="page-top major-topic-top"><button id="majorDigestAll" class="integrated-digest" title="一体学习全部重大专题消化清单" aria-label="一体学习全部重大专题消化清单"><i>∞</i><b id="majorDigestAllProgress">0/0</b></button><div><small>重大专题</small><strong>重大专题时政 · 讲义消化清单</strong></div><button id="majorTopicAll" class="current-all">全部专题混合学习 →</button></nav><div id="majorTopicGrid" class="major-topic-grid"></div></div></section>

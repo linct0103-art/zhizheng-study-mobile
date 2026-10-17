@@ -6,20 +6,44 @@ function expandSprintDigest() {
   if (sprintDeckReady) return;
   const commonById = new Map(COMMON_DIGEST.cards.map(card => [card.id, card]));
   const stripNumber = text => String(text || '').replace(/^\s*(?:[（(]?\d{1,2}[）)、.]\s*)+/, '');
-  const matchedCommon = SPRINT_MATCHES.common.map(([id, page]) => {
+  const matchedCommon = SPRINT_MATCHES.common.map(([id, page], order) => {
     const source = commonById.get(id);
     if (!source) return null;
     const question = stripNumber(source.question), answer = stripNumber(source.answer);
     return { ...source, id: `sprint-reuse-${id}`, volume: `冲刺班 · ${source.volume}`,
       question, answer, digestPage: page, sourceFile: SPRINT_DIGEST.source,
-      originalCardId: id, sprintMatched: true };
+      originalCardId: id, sprintMatched: true, sprintOrder: order };
   }).filter(Boolean);
-  // Political-theory prompts and blank positions come only from the sprint digest.
-  // The lecture supplies the answers, never a replacement question.
-  SPRINT_DIGEST.cards = SPRINT_DIGEST.cards.filter(card => card.group !== 'theory' && card.group !== 'current')
-    .concat(SPRINT_THEORY_DIGEST_CARDS, SPRINT_CURRENT_DIGEST_CARDS, matchedCommon);
+  // Political theory keeps the original numbered digest blocks and blank order.
+  const commonSource = SPRINT_DIGEST.cards.filter(card => card.group !== 'theory' && card.group !== 'current')
+    .concat(matchedCommon);
+  SPRINT_DIGEST.cards = SPRINT_THEORY_BLOCK_CARDS.concat(SPRINT_CURRENT_DIGEST_CARDS,
+    groupSprintCommonCards(commonSource));
   SPRINT_DIGEST.cards.sort((a, b) => a.digestPage - b.digestPage || a.id.localeCompare(b.id));
   sprintDeckReady = true;
+}
+
+function groupSprintCommonCards(cards) {
+  const ordered = cards.slice().sort((a, b) => a.digestPage - b.digestPage ||
+    (SPRINT_COMMON_SOURCE_ORDER[a.id] ?? 10000) - (SPRINT_COMMON_SOURCE_ORDER[b.id] ?? 10000) ||
+    (a.sprintOrder ?? 10000) - (b.sprintOrder ?? 10000));
+  const blocks = [];
+  for (const card of ordered) {
+    const title = String(card.title || card.topic || '').split('·')[0].trim();
+    const last = blocks[blocks.length - 1];
+    if (last && last.digestPage === card.digestPage && last.group === card.group &&
+        last.title === title && last.question.length + card.question.length < 280) {
+      last.question += `\n${card.question}`;
+      last.answer += `\n${card.answer}`;
+      last.digestTerms.push(...(card.digestTerms || []));
+      last.legacyIds.push(card.id);
+    } else {
+      blocks.push({ ...card, id: `sprint-common-block-${String(blocks.length + 1).padStart(3, '0')}`,
+        title, topic: title, digestTerms: [...(card.digestTerms || [])],
+        legacyIds: [card.id], digestBlock: true });
+    }
+  }
+  return blocks;
 }
 
 function commonPool(groupId) {
@@ -34,6 +58,8 @@ function commonPool(groupId) {
 function restoreSprintQuickProgress() {
   migrateSprintTheoryChecklistProgress();
   migrateSprintCurrentChecklistProgress();
+  migrateSprintTheoryBlockProgress();
+  migrateSprintCommonBlockProgress();
   if (saved.sprintQuickProgressMigrated) return;
   saved.sprintQuickLearned = saved.sprintQuickLearned || {};
   // The old version saved only the resume card. Reaching it required revealing every earlier card.
@@ -45,6 +71,69 @@ function restoreSprintQuickProgress() {
     for (let index = 0; index < resumeIndex; index++) saved.sprintQuickLearned[deck[index].id] = true;
   }
   saved.sprintQuickProgressMigrated = true;
+  localStorage.setItem('zhizhengStats', JSON.stringify(saved));
+}
+
+function migrateSprintCommonBlockProgress() {
+  if (saved.sprintCommonBlockMigrated) return;
+  expandSprintDigest();
+  saved.sprintQuickLearned = saved.sprintQuickLearned || {};
+  const common = SPRINT_DIGEST.cards.filter(card => card.group !== 'theory' && card.group !== 'current');
+  for (const card of common) {
+    if (card.legacyIds?.length && card.legacyIds.every(id => saved.sprintQuickLearned[id])) {
+      saved.sprintQuickLearned[card.id] = true;
+    }
+  }
+  for (const groupId of ['sprint-common', 'sprint']) {
+    const oldId = saved.commonQuickPosition?.[groupId];
+    const replacement = common.find(card => card.legacyIds?.includes(oldId));
+    if (replacement) saved.commonQuickPosition[groupId] = replacement.id;
+  }
+  for (const [key, note] of Object.entries(saved.starred || {})) {
+    if (!key.startsWith('sprint:')) continue;
+    const oldId = key.slice('sprint:'.length);
+    const replacement = common.find(card => card.legacyIds?.includes(oldId));
+    if (!replacement) continue;
+    const newKey = `sprint:${replacement.id}`;
+    saved.starred[newKey] = saved.starred[newKey] || {
+      ...note, key: newKey, group: replacement.volume, title: replacement.title,
+      prompt: replacement.question, answer: replacement.answer
+    };
+    delete saved.starred[key];
+  }
+  saved.sprintCommonBlockMigrated = true;
+  localStorage.setItem('zhizhengStats', JSON.stringify(saved));
+}
+
+function migrateSprintTheoryBlockProgress() {
+  if (saved.sprintTheoryBlockMigrated) return;
+  expandSprintDigest();
+  saved.sprintQuickLearned = saved.sprintQuickLearned || {};
+  const theory = SPRINT_DIGEST.cards.filter(card => card.group === 'theory');
+  for (const card of theory) {
+    const oldCards = (card.legacyIds || []).filter(id => id.startsWith('sprint-theory-digest-'));
+    if (oldCards.length && oldCards.every(id => saved.sprintQuickLearned[id])) {
+      saved.sprintQuickLearned[card.id] = true;
+    }
+  }
+  for (const groupId of ['sprint-theory', 'sprint']) {
+    const oldId = saved.commonQuickPosition?.[groupId];
+    const replacement = theory.find(card => card.legacyIds?.includes(oldId));
+    if (replacement) saved.commonQuickPosition[groupId] = replacement.id;
+  }
+  for (const [key, note] of Object.entries(saved.starred || {})) {
+    if (!key.startsWith('sprint:')) continue;
+    const oldId = key.slice('sprint:'.length);
+    const replacement = theory.find(card => card.legacyIds?.includes(oldId));
+    if (!replacement) continue;
+    const newKey = `sprint:${replacement.id}`;
+    saved.starred[newKey] = saved.starred[newKey] || {
+      ...note, key: newKey, group: replacement.volume, title: replacement.title,
+      prompt: replacement.question, answer: replacement.answer
+    };
+    delete saved.starred[key];
+  }
+  saved.sprintTheoryBlockMigrated = true;
   localStorage.setItem('zhizhengStats', JSON.stringify(saved));
 }
 

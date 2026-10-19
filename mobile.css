@@ -91,7 +91,7 @@
   .common-quick-view>.page-top{height:auto!important}
   .common-quick-stage{min-height:0;padding:0!important}
   .common-quick-card{--quick-font-size:16px;overflow-y:auto!important;justify-content:flex-start;padding:18px 16px!important;overscroll-behavior:contain}
-  .common-quick-content{margin:auto 0}
+  .common-quick-content{margin:0}
   .common-quick-footer{grid-template-columns:auto 1fr;min-height:42px}
 
   .flash-view.active{min-height:calc(100dvh - 88px)!important}

@@ -231,7 +231,7 @@ footer{border:0;background:transparent;color:#898176;padding:0 18px}
 
 /* 消化清单改为逐条学习卡，不再展示 PDF 页面图片 */
 .digest-reader{overflow:hidden;display:grid;place-items:center;padding:18px 7%}
-.digest-card{width:min(900px,100%);min-height:340px;background:rgba(255,252,247,.88);border:1px solid #e3d8cb;border-radius:28px;padding:34px 40px;box-shadow:0 18px 55px rgba(72,53,40,.1);display:flex;flex-direction:column;justify-content:center}
+.digest-card{width:min(900px,100%);min-height:340px;background:rgba(255,252,247,.88);border:1px solid #e3d8cb;border-radius:28px;padding:34px 40px;box-shadow:0 18px 55px rgba(72,53,40,.1);display:flex;flex-direction:column;justify-content:flex-start}
 .digest-card-meta{display:flex;align-items:center;gap:10px;margin-bottom:22px}.digest-card-meta span{padding:5px 10px;border-radius:10px;background:#a72e32;color:#fff;font-size:10px}.digest-card-meta small{color:var(--muted);font-size:10px}
 .digest-card h2{font:500 19px/1.55 var(--serif);margin:0 0 18px;color:var(--muted)}
 .digest-core{border-left:4px solid var(--red);background:linear-gradient(90deg,rgba(167,46,50,.07),rgba(167,46,50,.015));border-radius:0 18px 18px 0;padding:18px 22px;display:flex;flex-direction:column;gap:8px}.digest-core small{font-size:10px;color:var(--red)}.digest-core strong{font:600 23px/1.65 var(--serif);color:var(--ink)}
@@ -685,7 +685,7 @@ footer{border:0;background:transparent;color:#898176;padding:0 18px}
 .notebook-view>.page-top{height:62px;margin:0}
 .notebook-view>.page-top>span{justify-self:end;color:#8b8177;font-size:13px}
 .notebook-flash-stage{min-height:0;display:grid;place-items:stretch}
-.notebook-flash-card{min-height:0;height:100%;width:min(100%,1120px);margin:auto;padding:clamp(24px,4vw,54px);border:1px solid #e5d8c8;border-radius:28px;background:#fffdf9e8;box-shadow:0 20px 55px #5b44311b;cursor:pointer;display:flex;align-items:center;overflow:hidden}
+.notebook-flash-card{min-height:0;height:100%;width:min(100%,1120px);margin:auto;padding:clamp(24px,4vw,54px);border:1px solid #e5d8c8;border-radius:28px;background:#fffdf9e8;box-shadow:0 20px 55px #5b44311b;cursor:pointer;display:flex;align-items:flex-start;overflow:hidden}
 .notebook-flash-card:focus-visible{outline:2px solid var(--red);outline-offset:3px}
 .notebook-flash-content{width:100%;max-height:100%;overflow:hidden}
 .notebook-flash-content>small{display:block;margin-bottom:16px;color:var(--red);font:700 12px var(--sans)}
@@ -1455,12 +1455,12 @@ body{grid-template-rows:64px 48px minmax(0,1fr) 42px}
 .notebook-options button{padding:9px 12px;border:1px solid #dfd3c5;border-radius:10px;background:#fffdf9;color:#403b36;text-align:left;font:500 .7em/1.5 var(--serif);cursor:pointer}
 .notebook-options button.is-selected{border-color:#b8863e;background:#fff5e6}
 .notebook-options button.is-correct{border-color:#52715b;background:#ebf4ec;color:#355941}
-#notebookCard[data-kind="judgment"] .notebook-flash-content{height:100%;display:flex;flex-direction:column;justify-content:center}
-#notebookCard[data-kind="judgment"] .notebook-flash-body{display:flex;flex-direction:column;min-height:0;flex:1;padding-top:clamp(10px,5vh,70px)}
+#notebookCard[data-kind="judgment"] .notebook-flash-content{height:100%;display:flex;flex-direction:column;justify-content:flex-start}
+#notebookCard[data-kind="judgment"] .notebook-flash-body{display:flex;flex-direction:column;min-height:0;flex:1;padding-top:8px}
 .notebook-judgment{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:min(100%,620px);margin:auto auto 0;flex:none}
 .notebook-judgment button{height:50px;border:1px solid #d8c9ba;border-radius:13px;background:#fffdf9;color:#493e36;font:700 16px var(--sans);cursor:pointer}
 .notebook-judgment button.is-correct{border-color:#52715b;background:#ebf4ec;color:#355941}
 .notebook-judgment button.is-wrong{border-color:#b63237;background:#fff0ee;color:#a72e32}
 .notebook-judgment button:disabled{cursor:default;opacity:1}
-@media(max-width:760px){.notebook-flash-body .notebook-answer{margin-top:10px;padding:10px 12px}.notebook-law-rules{padding:10px 12px}.notebook-law-trap{margin-top:9px;padding:9px 11px}.notebook-options{gap:4px;margin-top:9px}.notebook-options button{padding:6px 8px}.notebook-judgment{gap:8px}.notebook-judgment button{height:42px;font-size:13px}#notebookCard[data-kind="judgment"] .notebook-flash-body{padding-top:20px}}
+@media(max-width:760px){.notebook-flash-body .notebook-answer{margin-top:10px;padding:10px 12px}.notebook-law-rules{padding:10px 12px}.notebook-law-trap{margin-top:9px;padding:9px 11px}.notebook-options{gap:4px;margin-top:9px}.notebook-options button{padding:6px 8px}.notebook-judgment{gap:8px}.notebook-judgment button{height:42px;font-size:13px}#notebookCard[data-kind="judgment"] .notebook-flash-body{padding-top:8px}}
 

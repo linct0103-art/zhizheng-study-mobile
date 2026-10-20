@@ -578,6 +578,15 @@ function ensureExamTrapReviewData(){
     saved.examTrapImportedReviewInitialized=true;
     changed=true;
   }
+  if(!saved.examTrapImported20261020){
+    for(const card of EXAM_TRAP_CARDS){
+      if(EXAM_TRAP_NEW_REVIEW_PROMPTS.has(card.drillQuestion)&&!saved.examTrapReview[card.id]){
+        saved.examTrapReview[card.id]={stage:0,next:currentDateKey(),last:currentDateKey(),reviews:0};
+      }
+    }
+    saved.examTrapImported20261020=true;
+    changed=true;
+  }
   for(const card of EXAM_TRAP_CARDS){
     const choice=saved.examTrapChoices[card.id];
     if(typeof choice==='boolean'&&choice!==card.drillIsCorrect&&!saved.examTrapReview[card.id]){

@@ -569,6 +569,26 @@ function ensureExamTrapReviewData(){
   saved.examTrapChoices=saved.examTrapChoices||{};
   saved.examTrapReview=saved.examTrapReview||{};
   let changed=false;
+  // 合并同话题卡时沿用主卡 ID，迁入旧卡的学习、标星及到期复习记录。
+  if(!saved.examTrapMergedTopics20261026){
+    saved.currentKnown=saved.currentKnown||{};
+    for(const card of EXAM_TRAP_CARDS.filter(item=>item.legacyIds?.length)){
+      for(const oldId of card.legacyIds){
+        const oldCard=EXAM_TRAP_ORIGINAL_CARDS.find(item=>item.id===oldId);
+        if(saved.currentKnown[oldId])saved.currentKnown[card.id]=true;
+        const oldReview=saved.examTrapReview[oldId];
+        if(oldReview&&(!saved.examTrapReview[card.id]||oldReview.next<saved.examTrapReview[card.id].next))saved.examTrapReview[card.id]=oldReview;
+        if(typeof saved.examTrapChoices[oldId]==='boolean'&&oldCard&&saved.examTrapChoices[oldId]!==oldCard.drillIsCorrect&&!saved.examTrapReview[card.id]){
+          saved.examTrapReview[card.id]={stage:0,next:currentDateKey(),last:currentDateKey(),reviews:0};
+        }
+        const oldStar=saved.starred[`current:${oldId}`];
+        if(oldStar&&!saved.starred[`current:${card.id}`])saved.starred[`current:${card.id}`]={...oldStar,key:`current:${card.id}`,title:card.title,prompt:card.drillQuestion,answer:card.answer,tip:card.drillIsCorrect?'原句正确，防止见熟词一律判错':`${card.drillSwap} ≠ ${card.drillTerm}`};
+        delete saved.currentKnown[oldId];delete saved.examTrapChoices[oldId];delete saved.examTrapReview[oldId];delete saved.starred[`current:${oldId}`];
+      }
+    }
+    saved.examTrapMergedTopics20261026=true;
+    changed=true;
+  }
   if(!saved.examTrapImportedReviewInitialized){
     for(const card of EXAM_TRAP_CARDS){
       if(card.initialReview&&!saved.examTrapReview[card.id]){

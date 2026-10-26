@@ -431,7 +431,7 @@ const EXAM_TRAP_20261025_REVIEW_PROMPTS=new Set([
   '支持高新技术企业和科技型中小企业发展，提高企业研发费用加计扣除比例。',
   '一体推进不敢腐不能腐不想腐，是全面从严治党的长远和根本之策。'
 ]);
-const EXAM_TRAP_CARDS=EXAM_TRAP_ROWS.map((row,index)=>{
+const EXAM_TRAP_ORIGINAL_CARDS=EXAM_TRAP_ROWS.map((row,index)=>{
   const [topicId,isCorrect,drillQuestion,drillTerm,drillSwap,trap,answer,sourceOverride,verifiedSourceOverride]=row;
   const topic=EXAM_TRAP_TOPICS[topicId];
   const group=EXAM_TRAP_GROUPS.find(item=>item.topics.includes(topicId));
@@ -456,3 +456,30 @@ const EXAM_TRAP_CARDS=EXAM_TRAP_ROWS.map((row,index)=>{
     verifiedSource:verifiedSourceOverride||topic.verifiedSource
   };
 });
+// 同一知识链只保留一张判断卡。沿用主卡旧 ID，已学、标星与错题复习可迁移。
+const EXAM_TRAP_MERGES=[
+  {keep:23,absorb:[24],question:'“三个代表”重要思想创造性回答了什么是社会主义、怎样建设社会主义的问题，进一步回答了建设什么样的党、怎样建设党的问题。',swap:'创造性回答了什么是社会主义、怎样建设社会主义的问题，进一步回答了建设什么样的党、怎样建设党的问题',term:'进一步回答了什么是社会主义、怎样建设社会主义的问题，创造性回答了建设什么样的党、怎样建设党的问题',answer:'“三个代表”重要思想进一步回答了什么是社会主义、怎样建设社会主义的问题，创造性回答了建设什么样的党、怎样建设党的问题。'},
+  {keep:27,absorb:[186]},
+  {keep:28,absorb:[29,30],question:'全面从严治党的“牛鼻子”是纪委监督责任，党委书记履行监督责任，纪委书记履行第一责任人责任。',swap:'纪委监督责任，党委书记履行监督责任，纪委书记履行第一责任人责任',term:'党委（党组）主体责任，党委书记履行第一责任人责任，纪委履行监督责任',answer:'“牛鼻子”是党委（党组）主体责任，党委书记履行第一责任人责任，纪委履行监督责任。'},
+  {keep:37,absorb:[38],question:'董事会把方向、管大局、保落实；党委（党组）定战略、作决策、防风险。',swap:'董事会把方向、管大局、保落实；党委（党组）定战略、作决策、防风险',term:'党委（党组）把方向、管大局、保落实；董事会定战略、作决策、防风险',answer:'党委（党组）把方向、管大局、保落实；董事会定战略、作决策、防风险。'},
+  {keep:150,absorb:[57]},
+  {keep:125,absorb:[209]},
+  {keep:251,absorb:[135]},
+  {keep:144,absorb:[245]},
+  {keep:161,absorb:[162],question:'“十五五”要降低高收入群体收入，推动形成金字塔型分配格局。',swap:'降低高收入群体收入，推动形成金字塔型分配格局',term:'增加低收入群体收入、提高中等收入群体比重，推动形成橄榄型分配格局',answer:'要增加低收入群体收入、提高中等收入群体比重，推动形成橄榄型分配格局。'},
+  {keep:205,absorb:[207],question:'城市发展要以外延式扩张为主线，由存量提质增效转向大规模增量扩张。',swap:'以外延式扩张为主线，由存量提质增效转向大规模增量扩张',term:'以内涵式发展为主线，由大规模增量扩张转向存量提质增效',answer:'城市发展以内涵式发展为主线，由大规模增量扩张转向存量提质增效。'},
+  {keep:238,absorb:[239],question:'服务业是实体经济的基础，要坚定不移建设服务强国。',swap:'服务业是实体经济的基础，要坚定不移建设服务强国',term:'制造业是实体经济的基础，要坚定不移建设制造强国',answer:'制造业是实体经济的基础，要坚定不移建设制造强国。'},
+  {keep:255,absorb:[256,257],question:'发展海洋经济要注重创新驱动、突破关键核心技术，坚持陆海统筹、山海联动，推动传统产业升级并培育未来产业。',term:'创新驱动、突破关键核心技术，坚持陆海统筹、山海联动，推动传统产业升级并培育未来产业',answer:'发展海洋经济要注重创新驱动、突破关键核心技术，坚持陆海统筹、山海联动，推动传统产业升级并培育未来产业。'}
+];
+const examTrapId=number=>`exam-trap-${String(number).padStart(3,'0')}`;
+const EXAM_TRAP_ABSORBED_IDS=new Set(EXAM_TRAP_MERGES.flatMap(merge=>merge.absorb.map(examTrapId)));
+const EXAM_TRAP_CARDS=EXAM_TRAP_ORIGINAL_CARDS.filter(card=>!EXAM_TRAP_ABSORBED_IDS.has(card.id));
+for(const merge of EXAM_TRAP_MERGES){
+  const card=EXAM_TRAP_CARDS.find(item=>item.id===examTrapId(merge.keep));
+  card.legacyIds=merge.absorb.map(examTrapId);
+  card.initialReview ||=card.legacyIds.some(id=>EXAM_TRAP_ORIGINAL_CARDS.find(item=>item.id===id)?.initialReview);
+  if(merge.question)card.drillQuestion=merge.question;
+  if(merge.term)card.drillTerm=merge.term;
+  if(merge.swap)card.drillSwap=merge.swap;
+  if(merge.answer){card.answer=merge.answer;card.points=[merge.answer]}
+}
